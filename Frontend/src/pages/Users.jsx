@@ -1,10 +1,11 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
 import Button from "../components/Button";
 import Table from "../components/Table";
 import Input from "../components/Input";
 import PageLayout from "../utils/PageLayout";
 import { MdSearch } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 
 const Users = () => {
   const columns = useMemo(
@@ -48,6 +49,7 @@ const Users = () => {
     []
   );
 
+  const navigate = useNavigate();
   return (
     <PageLayout>
       <div className="row-between">
@@ -60,7 +62,11 @@ const Users = () => {
         </div>
       </div>
 
-      <Table data={data} columns={columns} rowRedirect="users" />
+      <Table
+        data={data}
+        columns={columns}
+        onCellClick={(e, row, i, cell) => cell.column.id !== "shelter" && navigate(`/users/${i}`, { queryParams: { id: i } })}
+      />
     </PageLayout>
   );
 };

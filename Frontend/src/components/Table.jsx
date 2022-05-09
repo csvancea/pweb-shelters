@@ -1,20 +1,13 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import { useTable } from "react-table/dist/react-table.development";
 
-const Table = ({ data, columns, rowRedirect }) => {
-  const navigate = useNavigate();
-
+const Table = ({ data, columns, onRowClick, onCellClick }) => {
   // Use the state and functions returned from useTable to build your UI
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable({
       columns,
       data,
     });
-
-  const handleRowClick = (index) => {
-    if (rowRedirect) navigate(`/${rowRedirect}/${index}`, { queryParams: { id: index } });
-  };
 
   // Render the UI for your table
   return (
@@ -35,13 +28,13 @@ const Table = ({ data, columns, rowRedirect }) => {
             <tr
               {...row.getRowProps()}
               className="cursor-pointer hover:bg-gray-50"
-              onClick={() => handleRowClick(i)}
+              onClick={(e) => onRowClick && onRowClick(e, row, i)}
             >
               {row.cells.map((cell) => {
                 return (
                   <td 
                     {...cell.getCellProps()}
-                    onClick={(e) => (cell.column.id == "address" || cell.column.id == "shelter") && e.stopPropagation()}
+                    onClick={(e) => onCellClick && onCellClick(e, row, i, cell)}
                   >
                     {cell.render("Cell")}
                   </td>);

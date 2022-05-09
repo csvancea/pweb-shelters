@@ -8,6 +8,8 @@ import { FaHandsHelping, FaCat } from "react-icons/fa";
 import { GiEarthAfricaEurope } from "react-icons/gi";
 import ShelterModal from "../components/modals/ShelterModal";
 import AdminOnly from "../utils/AdminOnly";
+import UserOnly from "../utils/UserOnly";
+import { useNavigate } from "react-router-dom";
 
 const Shelters = () => {
   const columns = useMemo(
@@ -64,6 +66,7 @@ const Shelters = () => {
     []
   );
 
+  const navigate = useNavigate();
   const [openedModal, setOpenedModal] = useState(false);
   return (
     <PageLayout>
@@ -88,8 +91,16 @@ const Shelters = () => {
           </AdminOnly>
         </div>
       </div>
-
-      <Table data={data} columns={columns} rowRedirect="shelters" />
+      <AdminOnly>
+        <Table
+          data={data}
+          columns={columns}
+          onCellClick={(e, row, i, cell) => cell.column.id !== "address" && navigate(`/shelters/${i}`, { queryParams: { id: i } })}
+        />
+      </AdminOnly>
+      <UserOnly>
+        <Table data={data} columns={columns} />
+      </UserOnly>
     </PageLayout>
   );
 };
