@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from "react";
-import Button from "../../components/Button";
-import AdminLayout from "../../utils/AdminLayout";
+import Button from "../components/Button";
+import PageLayout from "../utils/PageLayout";
 import { MdEdit, MdDelete } from "react-icons/md";
-import ShelterModal from "../../components/modals/ShelterModal";
-import Table from "../../components/Table";
-import Section from "../../components/Section";
+import ShelterModal from "../components/modals/ShelterModal";
+import Table from "../components/Table";
+import Section from "../components/Section";
 import { GiEarthAfricaEurope } from "react-icons/gi";
 import { FaHandsHelping, FaCat } from "react-icons/fa";
 
@@ -63,7 +63,7 @@ const Shelter = () => {
   );
 
   return (
-    <AdminLayout>
+    <PageLayout>
       <ShelterModal
         modalIsOpen={openedModal}
         closeModal={() => {
@@ -111,7 +111,7 @@ const Shelter = () => {
           <Table data={data} columns={columns} />
         </div>
       </div>
-    </AdminLayout>
+    </PageLayout>
   );
 };
 

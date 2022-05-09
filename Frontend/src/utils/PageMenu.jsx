@@ -27,7 +27,7 @@ export function CustomLink({ children, to, ...props }) {
   );
 }
 
-const AdminMenu = () => {
+const PageMenu = () => {
   const { logout, user } = useAuth0();
 
   return (
@@ -61,4 +61,4 @@ const AdminMenu = () => {
   );
 };
 
-export default AdminMenu;
+export default PageMenu;

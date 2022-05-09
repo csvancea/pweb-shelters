@@ -1,13 +1,13 @@
 import React, { useState, useMemo } from "react";
-import Button from "../../components/Button";
-import AdminLayout from "../../utils/AdminLayout";
+import Button from "../components/Button";
+import PageLayout from "../utils/PageLayout";
 import { MdEdit, MdDelete } from "react-icons/md";
 import { ImExit } from "react-icons/im";
 import { BsPlusLg } from "react-icons/bs"
-import UserModal from "../../components/modals/UserModal";
-import ExtendAccomodationModal from "../../components/modals/ExtendAccomodationModal";
-import Table from "../../components/Table";
-import Section from "../../components/Section";
+import UserModal from "../components/modals/UserModal";
+import ExtendAccomodationModal from "../components/modals/ExtendAccomodationModal";
+import Table from "../components/Table";
+import Section from "../components/Section";
 
 const User = () => {
   const [openedModal, setOpenedModal] = useState(false);
@@ -61,7 +61,7 @@ const User = () => {
   );
 
   return (
-    <AdminLayout>
+    <PageLayout>
       <UserModal
         modalIsOpen={openedModal}
         closeModal={() => {
@@ -130,7 +130,7 @@ const User = () => {
           <Table data={data} columns={columns} />
         </div>
       </div>
-    </AdminLayout>
+    </PageLayout>
   );
 };
 

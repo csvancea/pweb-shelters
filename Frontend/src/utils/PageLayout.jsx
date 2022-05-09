@@ -2,10 +2,10 @@ import { useAuth0 } from "@auth0/auth0-react";
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { authSettings } from "../AuthSettings";
-import AdminHeader from "./AdminHeader";
-import AdminMenu from "./AdminMenu";
+import PageHeader from "./PageHeader";
+import PageMenu from "./PageMenu";
 
-const AdminLayout = ({ children }) => {
+const PageLayout = ({ children }) => {
   const { user } = useAuth0();
   const navigate = useNavigate();
 
@@ -18,12 +18,13 @@ const AdminLayout = ({ children }) => {
 
   return (
     <div className="layout">
-      <AdminMenu />
+      <PageMenu />
       <div className="content">
+        <PageHeader />
         {children}
       </div>
     </div>
   );
 };
 
-export default AdminLayout;
+export default PageLayout;

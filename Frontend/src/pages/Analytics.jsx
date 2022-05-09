@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
-import Input from "../../components/Input";
-import AdminLayout from "../../utils/AdminLayout";
+import Input from "../components/Input";
+import PageLayout from "../utils/PageLayout";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -111,7 +111,7 @@ const Analytics = () => {
   );
 
   return (
-    <AdminLayout>
+    <PageLayout>
       <div className="row-between">
         <h2>Book Analytics</h2>
       </div>
@@ -159,7 +159,7 @@ const Analytics = () => {
           />
         </div>
       </div>
-    </AdminLayout>
+    </PageLayout>
   );
 };
 

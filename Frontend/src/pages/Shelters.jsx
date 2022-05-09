@@ -1,13 +1,12 @@
 import React, { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import Button from "../../components/Button";
-import Table from "../../components/Table";
-import Input from "../../components/Input";
-import AdminLayout from "../../utils/AdminLayout";
+import Button from "../components/Button";
+import Table from "../components/Table";
+import Input from "../components/Input";
+import PageLayout from "../utils/PageLayout";
 import { MdAdd, MdSearch } from "react-icons/md";
 import { FaHandsHelping, FaCat } from "react-icons/fa";
 import { GiEarthAfricaEurope } from "react-icons/gi";
-import ShelterModal from "../../components/modals/ShelterModal";
+import ShelterModal from "../components/modals/ShelterModal";
 
 const Shelters = () => {
   const columns = useMemo(
@@ -66,7 +65,7 @@ const Shelters = () => {
 
   const [openedModal, setOpenedModal] = useState(false);
   return (
-    <AdminLayout>
+    <PageLayout>
       <ShelterModal
         modalIsOpen={openedModal}
         closeModal={() => {
@@ -88,7 +87,7 @@ const Shelters = () => {
       </div>
 
       <Table data={data} columns={columns} rowRedirect="shelters" />
-    </AdminLayout>
+    </PageLayout>
   );
 };
 

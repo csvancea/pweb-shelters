@@ -1,9 +1,9 @@
 import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import Button from "../../components/Button";
-import Table from "../../components/Table";
-import Input from "../../components/Input";
-import AdminLayout from "../../utils/AdminLayout";
+import Button from "../components/Button";
+import Table from "../components/Table";
+import Input from "../components/Input";
+import PageLayout from "../utils/PageLayout";
 import { MdSearch } from "react-icons/md";
 
 const Users = () => {
@@ -49,7 +49,7 @@ const Users = () => {
   );
 
   return (
-    <AdminLayout>
+    <PageLayout>
       <div className="row-between">
         <h2>{data.length} Users</h2>
         <Input style={{width: "30rem"}} placeholder="Filter" />
@@ -61,7 +61,7 @@ const Users = () => {
       </div>
 
       <Table data={data} columns={columns} rowRedirect="users" />
-    </AdminLayout>
+    </PageLayout>
   );
 };
 
