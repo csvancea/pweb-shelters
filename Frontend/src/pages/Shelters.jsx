@@ -7,6 +7,7 @@ import { MdAdd, MdSearch } from "react-icons/md";
 import { FaHandsHelping, FaCat } from "react-icons/fa";
 import { GiEarthAfricaEurope } from "react-icons/gi";
 import ShelterModal from "../components/modals/ShelterModal";
+import AdminOnly from "../utils/AdminOnly";
 
 const Shelters = () => {
   const columns = useMemo(
@@ -80,9 +81,11 @@ const Shelters = () => {
           <Button>
               <MdSearch /> Search
           </Button>
-          <Button onClick={() => setOpenedModal(true)}>
-            <MdAdd /> Add Shelter
-          </Button>
+          <AdminOnly>
+            <Button onClick={() => setOpenedModal(true)}>
+              <MdAdd /> Add Shelter
+            </Button>
+          </AdminOnly>
         </div>
       </div>
 

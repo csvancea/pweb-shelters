@@ -8,6 +8,7 @@ import UserModal from "../components/modals/UserModal";
 import ExtendAccomodationModal from "../components/modals/ExtendAccomodationModal";
 import Table from "../components/Table";
 import Section from "../components/Section";
+import AdminOnly from "../utils/AdminOnly"
 
 const User = () => {
   const [openedModal, setOpenedModal] = useState(false);
@@ -82,12 +83,14 @@ const User = () => {
           <Button onClick={() => setOpenedModal(true)}>
             <MdEdit /> Edit
           </Button>
-          <Button
-            className="delete-button"
-            onClick={() => alert("Are you sure?")}
-          >
-            <MdDelete /> Delete
-          </Button>
+          <AdminOnly>
+            <Button
+              className="delete-button"
+              onClick={() => alert("Are you sure?")}
+            >
+              <MdDelete /> Delete
+            </Button>
+          </AdminOnly>
         </div>
       </div>
       <div className="flex flex-col gap-10">
