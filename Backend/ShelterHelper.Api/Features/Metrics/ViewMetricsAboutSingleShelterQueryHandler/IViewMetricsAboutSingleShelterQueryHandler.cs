@@ -2,6 +2,6 @@
 {
     public interface IViewMetricsAboutSingleShelterQueryHandler
     {
-        public Task<ViewMetricsAboutBookDto> HandleAsync(int shelterId, CancellationToken cancellationToken);
+        public Task<ViewMetricsAboutShelterDto> HandleAsync(int shelterId, CancellationToken cancellationToken);
     }
 }

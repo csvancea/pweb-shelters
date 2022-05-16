@@ -8,11 +8,13 @@
             ShelterName = shelter.Name;
             checkInDate = booking.CheckInDate;
             checkOutDate = booking.ActualCheckOutDate;
+            expectedCheckOutDate = booking.ExpectedCheckOutDate;
         }
 
         public int ShelterId { get; init; }
         public string ShelterName { get; init; }
         public DateTime checkInDate { get; init; }
         public DateTime? checkOutDate { get; init; }
+        public DateTime expectedCheckOutDate { get; init; }
     }
 }

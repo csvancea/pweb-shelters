@@ -17,28 +17,12 @@ namespace ShelterHelper.Infrastructure.Data.EntityConfigurations
                 .IsUnique();
 
             builder
-                .Property(x => x.Name)
-                .IsRequired();
-
-            builder
                 .Property(x => x.Email)
                 .IsRequired();
 
             builder
                 .HasIndex(x => x.Email)
                 .IsUnique();
-
-            builder
-                .Property(x => x.PhoneNumber)
-                .IsRequired();
-
-            builder
-                .Property(x => x.Address)
-                .IsRequired();
-
-            builder
-                .Property(x => x.BirthDate)
-                .IsRequired();
 
             base.Configure(builder);
         }

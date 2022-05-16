@@ -5,14 +5,15 @@ namespace ShelterHelper.Core.Domain.UserBookings
 {
     public class UsersBookingsDomain : DomainOfAggregate<Users>
     {
+        private const int MaxDaysBeforeExtending = 100;
+
         public UsersBookingsDomain(Users aggregate) : base(aggregate)
         {
         }
 
-        public void UpdateProfile(string name, string email, string phone, string address, DateTime birthDate)
+        public void UpdateProfile(string? name, string? phone, string? address, DateTime? birthDate)
         {
             aggregate.Name = name;
-            aggregate.Email = email;
             aggregate.PhoneNumber = phone;
             aggregate.Address = address;
             aggregate.BirthDate = birthDate;
@@ -30,6 +31,24 @@ namespace ShelterHelper.Core.Domain.UserBookings
             return new UserBookedShelterEvent(shelterId);
         }
 
+        public void CheckInExtendShelter(int shelterId, int rentalDays)
+        {
+            var booking = aggregate.Bookings
+              .FirstOrDefault(x => x.ShelterId == shelterId && !x.ActualCheckOutDate.HasValue);
+
+            if (booking == null)
+            {
+                throw new BookingNotFoundException(shelterId);
+            }
+
+            if ((booking.ExpectedCheckOutDate - DateTime.Now) > TimeSpan.FromDays(MaxDaysBeforeExtending))
+            {
+                throw new BookingExtendTooSoon(MaxDaysBeforeExtending);
+            }
+
+            booking.ExpectedCheckOutDate += TimeSpan.FromDays(rentalDays);
+        }
+
         public UserCheckedOutFromShelterEvent CheckOutShelter(int shelterId)
         {
             var booking = aggregate.Bookings
@@ -44,6 +63,8 @@ namespace ShelterHelper.Core.Domain.UserBookings
             
             return new UserCheckedOutFromShelterEvent(shelterId);
         }
+
+        public bool ProfileCanBeDeleted() => aggregate.Bookings.Count((b) => !b.ActualCheckOutDate.HasValue) == 0;
 
         public int GetProfileId() => aggregate.Id;
     }

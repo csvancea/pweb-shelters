@@ -21,7 +21,8 @@ namespace ShelterHelper.Core.Domain.Shelter
             aggregate.Pets = pets;
         }
 
-        public bool ShelterCanBeBooked(int rentalDays) => aggregate.NumberOfUsers < aggregate.Capacity && rentalDays <= aggregate.MaximumDaysForRental;
+        public bool ShelterCanBeBooked(int rentalDays) => aggregate.NumberOfUsers < aggregate.Capacity && rentalDays > 0 && rentalDays <= aggregate.MaximumDaysForRental;
+        public bool ShelterCanBeExtended(int rentalDays) => rentalDays > 0 && rentalDays <= aggregate.MaximumDaysForRental;
         public void IncreaseShelterUsers() => aggregate.NumberOfUsers++;
         public void DecreaseShelterUsers() => aggregate.NumberOfUsers--;
         public bool ShelterCanBeDeleted() => aggregate.NumberOfUsers == 0;

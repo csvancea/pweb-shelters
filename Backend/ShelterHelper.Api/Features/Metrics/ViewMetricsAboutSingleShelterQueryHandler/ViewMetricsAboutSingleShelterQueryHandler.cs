@@ -13,28 +13,29 @@ namespace ShelterHelper.Api.Features.Metrics.ViewMetricsAboutShelter
             this.dbContext = dbContext;
         }
 
-        public async Task<ViewMetricsAboutBookDto> HandleAsync(int shelterId, CancellationToken cancellationToken)
+        public async Task<ViewMetricsAboutShelterDto> HandleAsync(int shelterId, CancellationToken cancellationToken)
         {
             var query = from shelter in dbContext.Shelters
                         where shelter.Id == shelterId
-                        join booking in dbContext.Bookings.Include(x => x.Reader)
+                        join booking in dbContext.Bookings.Include(x => x.User)
                             on shelter.Id equals booking.ShelterId into grouping
                         from booking in grouping.DefaultIfEmpty()
-                        select new BookRentalQueryDto(shelter, booking);
+                        orderby booking.Id descending
+                        select new ShelterBookingQueryDto(shelter, booking);
 
             var result = await query
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
 
-            var metric = new ViewMetricsAboutBookDto(shelterId, result[0].BookName, result[0].AuthorName);
+            var metric = new ViewMetricsAboutShelterDto(shelterId, result[0].ShelterName, result[0].ShelterTotalNumberOfRefugees);
 
-            foreach (var bookRental in result)
+            foreach (var shelterBooking in result)
             {
-                var rentalDto = bookRental.ValidateAndParseRental();
+                var refugeeDto = shelterBooking.ValidateAndParseRefugee();
 
-                if (rentalDto != null)
+                if (refugeeDto != null)
                 {
-                    metric.AddRentalToHistory(rentalDto);
+                    metric.AddRefugeeToHistory(refugeeDto);
                 }
             }
 

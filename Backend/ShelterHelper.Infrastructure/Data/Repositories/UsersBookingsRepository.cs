@@ -23,6 +23,16 @@ namespace ShelterHelper.Infrastructure.Data.Repositories
             await SaveAsync(cancellationToken);
         }
 
+        public async Task DeleteUserAsync(int id, CancellationToken cancellationToken)
+        {
+            var user = await context.Users.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+
+            if (user != null)
+            {
+                context.Users.Remove(user);
+            }
+        }
+
         public async Task<DomainOfAggregate<Users>?> GetAsync(int aggregateId, CancellationToken cancellationToken)
         {
             var entity = await context.Users

@@ -1,6 +1,6 @@
 ﻿using ShelterHelper.Api.Features.Shelter;
-// using ShelterHelper.Api.Features.Metrics;
-using ShelterHelper.Api.Features.Profile;
+using ShelterHelper.Api.Features.Metrics;
+using ShelterHelper.Api.Features.Profiles;
 using ShelterHelper.Api.Features.Bookings;
 
 namespace ShelterHelper.Api.Web
@@ -10,7 +10,7 @@ namespace ShelterHelper.Api.Web
         public static void AddApiFeaturesHandlers(this IServiceCollection services)
         {
             // Add Shelter Handlers
-            services.AddBooksHandlers();
+            services.AddSheltersHandlers();
 
             // Add Profile Handlers
             services.AddProfilesHandlers();
@@ -19,8 +19,7 @@ namespace ShelterHelper.Api.Web
             services.AddBookingsHandlers();
 
             // Add Metrics Handlers
-            // TODO
-            // services.AddMetricsHandlers();
+            services.AddMetricsHandlers();
         }
     }
 }

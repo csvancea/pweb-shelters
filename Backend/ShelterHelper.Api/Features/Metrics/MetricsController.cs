@@ -15,9 +15,9 @@ namespace ShelterHelper.Api.Features.Metrics
             this.viewMetricsAboutSingleShelterQueryHandler = viewMetricsAboutSingleShelterQueryHandler;
         }
 
-        [HttpGet("metricsAboutBook/{id}")]
+        [HttpGet("metricsAboutShelter/{id}")]
         [Authorize("AdminAccess")]
-        public async Task<ActionResult<ViewMetricsAboutBookDto>> ViewMetricsAboutBookAsync([FromRoute] int id, CancellationToken cancellationToken)
+        public async Task<ActionResult<ViewMetricsAboutShelterDto>> ViewMetricsAboutShelterAsync([FromRoute] int id, CancellationToken cancellationToken)
         {
             var metric = await viewMetricsAboutSingleShelterQueryHandler.HandleAsync(id, cancellationToken);
 

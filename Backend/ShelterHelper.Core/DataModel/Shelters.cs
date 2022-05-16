@@ -4,7 +4,7 @@ namespace ShelterHelper.Core.DataModel
 {
     public class Shelters : Entity, IAggregateRoot
     {
-        public Shelters(string name, string address, string mapsLink, int capacity, int maximumDaysForRental, int numberOfUsers = 0, bool accessibility = false, bool pets = false)
+        public Shelters(string name, string address, string mapsLink, int capacity, int maximumDaysForRental, int numberOfUsers, bool accessibility, bool pets)
         {
             Name = name;
             Address = address;
