@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { authSettings } from "../AuthSettings";
+import { authSettings } from "../configs/AuthSettings";
 
 function UserOnly({ children }) {
   const { user } = useAuth0();

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import Button from "../components/Button";
 import PageLayout from "../utils/PageLayout";
 import { MdEdit, MdDelete } from "react-icons/md";
@@ -7,60 +7,118 @@ import Table from "../components/Table";
 import Section from "../components/Section";
 import { GiEarthAfricaEurope } from "react-icons/gi";
 import { FaHandsHelping, FaCat } from "react-icons/fa";
+import { useLocation, useNavigate } from "react-router-dom";
+import axiosInstance from "../configs/Axios";
+import { routes } from "../configs/Api";
+import { useAuth0 } from "@auth0/auth0-react";
+import { prettyDate } from "../utils/Functions";
+
+const columns = [
+  {
+    Header: "Name",
+    accessor: "name",
+  },
+  {
+    Header: "Email",
+    accessor: "email",
+  },
+  {
+    Header: "Phone",
+    accessor: "phoneNumber",
+  },
+  {
+    Header: "Checkin Date",
+    accessor: "checkInDate",
+    Cell: ({ cell: { value } }) => prettyDate(value)
+  },
+  {
+    Header: "Checkout Date",
+    accessor: "checkOutDate",
+    Cell: ({ cell: { value } }) => prettyDate(value)
+  }
+];
 
 const Shelter = () => {
+  const { getAccessTokenSilently } = useAuth0();
   const [openedModal, setOpenedModal] = useState(false);
+  const [shelterInfo, setShelterData] = useState({});
+  const [metricsInfo, setMetricsData] = useState({});
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const id = pathname.split("/").reverse()[0];
 
-  const shelterData = {
-    name: "Siret #1",
-    address: "Botosani",
-    link: "https://google.com",
-    capacity: "25",
-    tags: ["disability", "pet"]
+  const shelterFields = useMemo(
+    () => [
+      { key: "Name", value: shelterInfo.name },
+      { key: "Address", value: shelterInfo.address },
+      { key: "Google Maps", value: <a className="link" href={shelterInfo.mapsLink}> <GiEarthAfricaEurope /> </a> },
+      { key: "Rental Days", value: shelterInfo.maximumDaysForRental + " days" },
+      { key: "Capacity", value: `${shelterInfo.numberOfUsers} / ${shelterInfo.capacity}` },
+      {
+        key: "Tags",
+        value:
+          <div className="keyword-list">
+            { shelterInfo.accessibility && <FaHandsHelping /> }
+            { shelterInfo.pets && <FaCat /> }
+          </div>
+      }
+    ],
+    [shelterInfo]
+  );
+
+  const getShelter = useCallback(async () => {
+    const accessToken = await getAccessTokenSilently();
+    axiosInstance
+      .get(routes.shelters.getShelter(id), {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then(({ data }) => setShelterData(data));
+  }, [getAccessTokenSilently, id]);
+
+  const getMetricsInfo = useCallback(async () => {
+    const accessToken = await getAccessTokenSilently();
+    axiosInstance
+      .get(routes.metrics.getShelter(id), {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then(({ data }) => setMetricsData(data));
+  }, [getAccessTokenSilently, id]);
+
+  const handleUpdateShelter = (form) => {
+    (async () => {
+      const accessToken = await getAccessTokenSilently();
+      axiosInstance
+        .put(routes.shelters.updateShelter(id), form, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+        .then(() => getShelter());
+    })();
   };
 
-  const shelterFields = [
-    { key: "Name", value: shelterData.name },
-    { key: "Address", value: shelterData.address },
-    { key: "Google Maps", value: <a className="link" href={shelterData.link}> <GiEarthAfricaEurope /> </a> },
-    { key: "Capacity", value: shelterData.capacity },
-    { key: "Tags", value: 
-      <div className="keyword-list">
-        { shelterData.tags.includes("disability") && <FaHandsHelping /> }
-        { shelterData.tags.includes("pet") && <FaCat /> } 
-      </div> },
-  ];
+  const handleDelete = () => {
+    (async () => {
+      alert("Are you sure you want to delete this shelter?");
+      const accessToken = await getAccessTokenSilently();
+      axiosInstance
+      .delete(routes.shelters.deleteShelter(id), {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then(() => navigate("/shelters"));
+    })();
+  };
 
-  const columns = [
-    {
-      Header: "Name",
-      accessor: "name",
-    },
-    {
-      Header: "Email",
-      accessor: "email",
-    },
-    {
-      Header: "Phone",
-      accessor: "phone",
-    },
-    {
-      Header: "Checkout Date",
-      accessor: "checkoutDate",
-    },
-  ];
-
-  const data = useMemo(
-    () => Array(5).fill(
-        {
-          name: "Alexandr Lenko",
-          email: "alexandr.lenko@mail.ua",
-          phone: "+40 0712 345 678",
-          checkoutDate: "12 March 2022",
-        }
-      ),
-    []
-  );
+  useEffect(() => {
+    getShelter();
+    getMetricsInfo();
+  }, [getShelter, getMetricsInfo]);
 
   return (
     <PageLayout>
@@ -69,17 +127,18 @@ const Shelter = () => {
         closeModal={() => {
           setOpenedModal(false);
         }}
-        shelterData={shelterData}
+        submitForm={handleUpdateShelter}
+        shelterData={shelterInfo}
       />
       <div className="row-between">
-        <h2>Siret #1</h2>
+        <h2>{shelterInfo.name}</h2>
         <div className="row-center">
           <Button onClick={() => setOpenedModal(true)}>
             <MdEdit /> Edit
           </Button>
           <Button
             className="delete-button"
-            onClick={() => alert("Are you sure?")}
+            onClick={() => handleDelete()}
           >
             <MdDelete /> Delete
           </Button>
@@ -93,13 +152,13 @@ const Shelter = () => {
             <div className="flex gap-5">
               <div className="statistic-card">
                 <div className="card-statistic">
-                  <p>20</p>
+                  <p>{ metricsInfo.totalNumberOfRefugees }</p>
                   <p>refugees</p>
                 </div>
               </div>
               <div className="statistic-card">
                 <div className="card-statistic">
-                  <p>45 years</p>
+                  <p>{ Math.floor(metricsInfo.averageRefugeeAge) } years</p>
                   <p>avg. age of refugees</p>
                 </div>
               </div>
@@ -108,7 +167,7 @@ const Shelter = () => {
         </div>
         <div className="flex flex-col gap-5 w-full p-[1px]">
           <p className="section-title">Last 5 refugees</p>
-          <Table data={data} columns={columns} />
+          { metricsInfo?.refugeeHistory && <Table data={metricsInfo.refugeeHistory} columns={columns} /> }
         </div>
       </div>
     </PageLayout>

@@ -5,9 +5,10 @@ import Button from "../Button";
 import Input from "../Input";
 import { useForm } from "react-hook-form";
 
-const UserModal = ({ modalIsOpen, closeModal, userData, submitForm }) => {
+const RentModal = ({ modalIsOpen, closeModal, submitForm, extend }) => {
   const { register, handleSubmit, getValues } = useForm();
-  const action = userData && "Edit user" || "Add user";
+  const action = extend ? "Extend" : "Check in";
+  const placeholder = extend ? "of accomodation" : "";
 
   const handleClick = async () => {
     const data = getValues();
@@ -31,17 +32,14 @@ const UserModal = ({ modalIsOpen, closeModal, userData, submitForm }) => {
       </div>
       <div className="line" />
       <form>
-        <Input label="Name" placeholder="User name" {...register("name")} defaultValue={userData && userData.name || null} />
-        <Input label="Phone" placeholder="User phone" {...register("phoneNumber")} defaultValue={userData && userData.phoneNumber || null} />
-        <Input label="Address" placeholder="User address" {...register("address")} defaultValue={userData && userData.address || null} />
-        <Input label="Birth date" placeholder="Birth date" {...register("birthDate")} type="date" defaultValue={userData && userData.birthDate?.split('T')[0] || null} />
+        <Input label="Days" type="number" placeholder={`Number of days ${placeholder}`} {...register("RentalDays")} />
 
         <Button type="button" onClick={handleSubmit(handleClick)}>
-          Save
+          {action}
         </Button>
       </form>
     </Modal>
   );
 };
 
-export default UserModal;
+export default RentModal;

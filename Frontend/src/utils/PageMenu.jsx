@@ -57,8 +57,8 @@ const PageMenu = () => {
       </nav>
       <div className="admin-nav-bottom absolute bottom-10">
         <div className="nav-link">
-          <Avatar name={user.nickname} round="24px" size="24px" />
-          <p className="capitalize">{user.nickname}</p>
+          <Avatar name={user.name} round="24px" size="24px" />
+          <p className="capitalize">{user.name}</p>
         </div>
         <Link className="nav-link active bg-black" to={"#"} onClick={() => {logout({ returnTo: window.location.origin }); }}>
           <MdLogout /> Sign out

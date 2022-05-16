@@ -1,65 +1,150 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import Button from "../components/Button";
 import PageLayout from "../utils/PageLayout";
 import { MdEdit, MdDelete } from "react-icons/md";
 import { ImExit } from "react-icons/im";
 import { BsPlusLg } from "react-icons/bs"
 import UserModal from "../components/modals/UserModal";
-import ExtendAccomodationModal from "../components/modals/ExtendAccomodationModal";
+import RentModal from "../components/modals/RentModal";
 import Table from "../components/Table";
 import Section from "../components/Section";
-import AdminOnly from "../utils/AdminOnly"
+import AdminOnly from "../utils/AdminOnly";
+import UserOnly from "../utils/UserOnly";
+import { useAuth0 } from "@auth0/auth0-react";
+import { routes } from "../configs/Api";
+import axiosInstance from "../configs/Axios";
+import { prettyDate, daysBetween } from "../utils/Functions";
+import { useLocation, useNavigate } from "react-router-dom";
 
-const User = () => {
-  const [openedModal, setOpenedModal] = useState(false);
+const columns = [
+  {
+    Header: "Shelter",
+    accessor: "shelterName",
+  },
+  {
+    Header: "Check-in",
+    accessor: "checkInDate",
+    Cell: ({ cell: { value } }) => prettyDate(value)
+  },
+  {
+    Header: "Check-out",
+    accessor: "checkOutDate",
+    Cell: ({ cell: { value, row } }) => {
+      const checkOut = value != null ? value : row.original.expectedCheckOutDate;
+      return prettyDate(checkOut);
+    }
+  },
+  {
+    Header: "Duration",
+    accessor: "x",
+    Cell: ({ cell: { value, row } }) => {
+      const checkOut = row.original.checkOutDate != null ? row.original.checkOutDate : row.original.expectedCheckOutDate;
+      return daysBetween(row.original.checkInDate, checkOut);
+    }
+  }
+];
+
+const User = ({ self }) => {
+  const { getAccessTokenSilently } = useAuth0();
+  const { pathname, hash } = useLocation();
+  const [userData, setUserData] = useState({});
+  const [bookingHistory, setBookingHistory] = useState([]);
+  const [openedModal, setOpenedModal] = useState(hash === "#setup");
   const [openedExtensionModal, setOpenedExtensionModal] = useState(false);
+  const navigate = useNavigate();
+  const id = self === undefined ? pathname.split("/").reverse()[0] : 0;
 
-  const userData = {
-    name: "Alexandr Lenko",
-    email: "alexandr.lenko@mail.ua",
-    phone: "+40 0712 345 678",
-    address: "Donetsk",
-    birthdate: "12 March 2022"
+  const userFields = useMemo(
+    () => [
+      { key: "Name", value: userData.profile?.name },
+      { key: "Email", value: userData.profile?.email },
+      { key: "Phone", value: userData.profile?.phoneNumber },
+      { key: "Address", value: userData.profile?.address },
+      { key: "Birth date", value: userData.profile?.birthDate ? prettyDate(userData.profile?.birthDate) : "" }
+    ],
+    [userData]
+  );
+
+  const getUser = useCallback(async () => {
+    const accessToken = await getAccessTokenSilently();
+    axiosInstance
+      .get(routes.profiles.getProfile(id), {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then(({ data }) => setUserData(data));
+  }, [getAccessTokenSilently, id]);
+
+  const getBookingHistory = useCallback(async () => {
+    const accessToken = await getAccessTokenSilently();
+    axiosInstance
+      .get(routes.bookings.getHistory(id), {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then(({ data }) => setBookingHistory(data));
+  }, [getAccessTokenSilently, id]);
+
+  const handleUpdateUser = (form) => {
+    (async () => {
+      const accessToken = await getAccessTokenSilently();
+      axiosInstance
+        .put(routes.profiles.updateProfile(id), form, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+        .then(() => getUser());
+    })();
   };
 
-  const userFields = [
-    { key: "Name", value: userData.name },
-    { key: "Email", value: userData.email },
-    { key: "Phone", value: userData.phone },
-    { key: "Address", value: userData.address },
-    { key: "Birth date", value: userData.birthdate }
-  ];
+  const handleDelete = () => {
+    (async () => {
+      alert("Are you sure you want to delete this user?");
+      const accessToken = await getAccessTokenSilently();
+      axiosInstance
+      .delete(routes.profiles.deleteProfile(id), {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then(() => navigate("/users"));
+    })();
+  };
 
-  const columns = [
-    {
-      Header: "Shelter",
-      accessor: "shelter",
-    },
-    {
-      Header: "Check-in",
-      accessor: "checkinDate",
-    },
-    {
-      Header: "Check-out",
-      accessor: "checkoutDate",
-    },
-    {
-      Header: "Duration",
-      accessor: "duration",
-    },
-  ];
+  const handleExtension = (form) => {
+    (async () => {
+      const accessToken = await getAccessTokenSilently();
+      axiosInstance
+        .put(routes.bookings.extend(id), {...form, ShelterId: userData.currentShelter?.shelterId}, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+        .then(() => { getUser(); getBookingHistory(); });
+    })();
+  };
 
-  const data = useMemo(
-    () => Array(5).fill(
-        {
-          shelter: "Siret #1",
-          checkinDate: "01 March 2022",
-          checkoutDate: "15 March 2022",
-          duration: "2 weeks",
-        }
-      ),
-    []
-  );
+  const handleCheckOut = () => {
+    (async () => {
+      alert("Are you sure you want to checkout?");
+      const accessToken = await getAccessTokenSilently();
+      axiosInstance
+        .put(routes.bookings.checkOut(id), {ShelterId: userData.currentShelter?.shelterId}, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+        .then(() => { getUser(); getBookingHistory(); });
+    })();
+  };
+
+  useEffect(() => {
+    getUser();
+    getBookingHistory();
+  }, [getUser, getBookingHistory]);
 
   return (
     <PageLayout>
@@ -68,17 +153,20 @@ const User = () => {
         closeModal={() => {
           setOpenedModal(false);
         }}
-        userData={userData}
+        submitForm={handleUpdateUser}
+        userData={userData.profile}
       />
-      <ExtendAccomodationModal
+      <RentModal
         modalIsOpen={openedExtensionModal}
         closeModal={() => {
           setOpenedExtensionModal(false);
         }}
+        submitForm={handleExtension}
+        extend
       />
 
       <div className="row-between">
-        <h2>{userData.name}</h2>
+        <h2>{userData.profile?.name}</h2>
         <div className="row-center">
           <Button onClick={() => setOpenedModal(true)}>
             <MdEdit /> Edit
@@ -86,7 +174,7 @@ const User = () => {
           <AdminOnly>
             <Button
               className="delete-button"
-              onClick={() => alert("Are you sure?")}
+              onClick={() => handleDelete()}
             >
               <MdDelete /> Delete
             </Button>
@@ -96,19 +184,20 @@ const User = () => {
       <div className="flex flex-col gap-10">
         <div className="row-between-start">
           <Section title={"Profile Details"} fields={userFields} />
+          {userData.currentShelter != null &&
           <div className="flex flex-col gap-5">
             <p className="section-title">Current accomodation</p>
             <div className="flex gap-5">
               <div className="statistic-card">
                 <div className="card-statistic">
-                  <p>Siret #1</p>
+                  <p>{userData.currentShelter.shelterName}</p>
                   <p>shelter</p>
                 </div>
               </div>
               <div className="statistic-card">
                 <div className="card-statistic">
-                  <p>30 days</p>
-                  <p>remaining days</p>
+                  <p>{daysBetween(new Date(), userData.currentShelter.expectedCheckOutDate)}</p>
+                  <p>remaining time</p>
                 </div>
               </div>
             </div>
@@ -122,15 +211,24 @@ const User = () => {
             <Button
               className="delete-button"
               style={{width: "auto"}}
-              onClick={() => alert("Are you sure?")}
+              onClick={() => handleCheckOut()}
             >
               <ImExit /> Early checkout
             </Button>
-          </div>
+          </div> }
         </div>
         <div className="flex flex-col gap-5 w-full p-[1px]">
           <p className="section-title">Accomodation history</p>
-          <Table data={data} columns={columns} />
+          <AdminOnly>
+            <Table
+              data={bookingHistory}
+              columns={columns}
+              onRowClick={(e, row, i) => navigate(`/shelters/${row.original.shelterId}`)}
+            />
+          </AdminOnly>
+          <UserOnly>
+            <Table data={bookingHistory} columns={columns} />
+          </UserOnly>
         </div>
       </div>
     </PageLayout>

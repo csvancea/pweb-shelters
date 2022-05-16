@@ -126,10 +126,18 @@ label {
     @apply flex items-center gap-3;
 }
 
-.keyword-list>span {
+.keyword-list-active {
     @apply p-4 rounded-3xl bg-purple text-white font-semibold text-sm;
 }
 
+.keyword-list-inactive {
+    @apply p-4 rounded-3xl bg-red text-white font-semibold text-sm;
+}
+/*
+.keyword-list>span {
+    @apply p-4 rounded-3xl bg-purple text-white font-semibold text-sm;
+}
+*/
 
 /* modal */
 

@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import Button from "../components/Button";
 import Table from "../components/Table";
@@ -6,54 +6,68 @@ import Input from "../components/Input";
 import PageLayout from "../utils/PageLayout";
 import { MdSearch } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
+import { routes } from "../configs/Api";
+import axiosInstance from "../configs/Axios";
+import { prettyDate } from "../utils/Functions";
+
+const columns = [
+  {
+    Header: "Name",
+    accessor: "profile.name",
+  },
+  {
+    Header: "Email",
+    accessor: "profile.email",
+  },
+  {
+    Header: "Phone",
+    accessor: "profile.phoneNumber",
+  },
+  {
+    Header: "Current Shelter",
+    accessor: "currentShelter.shelterName",
+    Cell: ({ cell: { value, row } }) => ( 
+      row.original.currentShelter
+        ? <Link to={`/shelters/${row.original.currentShelter.shelterId}`}>{row.original.currentShelter.shelterName}</Link>
+        : "-"
+    )
+  },
+  {
+    Header: "Expected Checkout",
+    accessor: "currentShelter.expectedCheckOutDate",
+    Cell: ({ cell: { value, row } }) => ( 
+      row.original.currentShelter
+        ? prettyDate(row.original.currentShelter.expectedCheckOutDate)
+        : "-"
+    )
+  },
+];
 
 const Users = () => {
-  const columns = useMemo(
-    () => [
-      {
-        Header: "Name",
-        accessor: "name",
-      },
-      {
-        Header: "Current shelter",
-        accessor: "shelter",
-        Cell: ({ cell: { value } }) => ( <Link to={`/shelters/${value.id}`}>{value.name}</Link>)
-      },
-      {
-        Header: "Email",
-        accessor: "email",
-      },
-      {
-        Header: "Phone",
-        accessor: "phone",
-      },
-      {
-        Header: "Checkout date",
-        accessor: "checkout_date",
-      },
-    ],
-    []
-  );
-  const data = useMemo(
-    () => Array(1).fill(
-      {
-        name: "Alexandr Lenko",
-        shelter: {
-          name: "Siret #1",
-          id: "0"
-        },
-        email: "alexandr.lenko@mail.ua",
-        phone: "+40 0712 345 678",
-        checkout_date: "12 March 2022",
-      }),
-    []
-  );
-
   const navigate = useNavigate();
+  const [users, setUsers] = useState([]);
+  const { getAccessTokenSilently } = useAuth0();
+
+  const getAllUsers = useCallback(async () => {
+    const accessToken = await getAccessTokenSilently();
+    axiosInstance
+      .get(routes.profiles.getAll, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then(({ data }) => setUsers(data));
+  }, [getAccessTokenSilently]);
+
+  useEffect(() => {
+    getAllUsers();
+  }, [getAllUsers]);
+
   return (
     <PageLayout>
       <div className="row-between">
-        <h2>{data.length} Users</h2>
+        <h2>{users.length} {users.length > 1 ? "Users" : "User"}</h2>
         <Input style={{width: "30rem"}} placeholder="Filter" />
         <div className="row-center">
           <Button>
@@ -63,9 +77,9 @@ const Users = () => {
       </div>
 
       <Table
-        data={data}
+        data={users}
         columns={columns}
-        onCellClick={(e, row, i, cell) => cell.column.id !== "shelter" && navigate(`/users/${i}`, { queryParams: { id: i } })}
+        onCellClick={(e, row, i, cell) => cell.column.id !== "currentShelter.shelterName" && navigate(`/users/${row.original.profile.id}`)}
       />
     </PageLayout>
   );
