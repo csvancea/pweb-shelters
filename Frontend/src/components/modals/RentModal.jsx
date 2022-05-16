@@ -32,7 +32,7 @@ const RentModal = ({ modalIsOpen, closeModal, submitForm, extend }) => {
       </div>
       <div className="line" />
       <form>
-        <Input label="Days" type="number" placeholder={`Number of days ${placeholder}`} {...register("RentalDays")} />
+        <Input label="Days" type="number" min="1" placeholder={`Number of days ${placeholder}`} {...register("RentalDays")} />
 
         <Button type="button" onClick={handleSubmit(handleClick)}>
           {action}

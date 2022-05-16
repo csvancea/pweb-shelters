@@ -60,8 +60,10 @@ const columns = [
 const Shelters = () => {
   const navigate = useNavigate();
   const [shelters, setShelters] = useState([]);
+  const [filteredShelters, setFilteredShelters] = useState([]);
   const [openedModal, setOpenedModal] = useState(false);
   const [openedRentModal, setOpenedRentModal] = useState(null);
+  const [searchFilter, setSearchFilter] = useState("");
   const { getAccessTokenSilently } = useAuth0();
 
   const getAllShelters = useCallback(async () => {
@@ -105,6 +107,16 @@ const Shelters = () => {
     getAllShelters();
   }, [getAllShelters]);
 
+  useEffect(() => {
+    if (searchFilter) {
+      setFilteredShelters(
+        shelters.filter(e => e.name.toLowerCase().includes(searchFilter) || e.address.toLowerCase().includes(searchFilter))
+      );
+    } else {
+      setFilteredShelters(shelters);
+    }
+  }, [searchFilter, shelters]);
+
   return (
     <PageLayout>
       <ShelterModal
@@ -125,9 +137,13 @@ const Shelters = () => {
 
       <div className="row-between">
         <h2>
-          {shelters.length} {shelters.length > 1 ? "Shelters" : "Shelter"}
+          {filteredShelters.length} {filteredShelters.length > 1 ? "Shelters" : "Shelter"}
         </h2>
-        <Input style={{width: "30rem"}} placeholder="Filter" />
+        <Input
+          style={{width: "30rem"}}
+          placeholder="Filter"
+          onChange={(e) => setSearchFilter(e.target.value?.toLowerCase())}
+        />
         <div className="row-center">
           <Button>
               <MdSearch /> Search
@@ -141,14 +157,14 @@ const Shelters = () => {
       </div>
       <AdminOnly>
         <Table
-          data={shelters}
+          data={filteredShelters}
           columns={columns}
           onCellClick={(e, row, i, cell) => cell.column.id !== "address" && navigate(`/shelters/${row.original.id}`)}
         />
       </AdminOnly>
       <UserOnly>
         <Table
-          data={shelters}
+          data={filteredShelters}
           columns={columns}
           onCellClick={(e, row, i, cell) => cell.column.id !== "address" && setOpenedRentModal(row.original)}
         />

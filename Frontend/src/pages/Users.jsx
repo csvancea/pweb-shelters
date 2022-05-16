@@ -47,6 +47,8 @@ const columns = [
 const Users = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [searchFilter, setSearchFilter] = useState("");
   const { getAccessTokenSilently } = useAuth0();
 
   const getAllUsers = useCallback(async () => {
@@ -64,11 +66,25 @@ const Users = () => {
     getAllUsers();
   }, [getAllUsers]);
 
+  useEffect(() => {
+    if (searchFilter) {
+      setFilteredUsers(
+        users.filter(e => e.profile.name.toLowerCase().includes(searchFilter) || e.profile.email.toLowerCase().includes(searchFilter) || e.profile.phoneNumber.toLowerCase().includes(searchFilter))
+      );
+    } else {
+      setFilteredUsers(users);
+    }
+  }, [searchFilter, users]);
+
   return (
     <PageLayout>
       <div className="row-between">
-        <h2>{users.length} {users.length > 1 ? "Users" : "User"}</h2>
-        <Input style={{width: "30rem"}} placeholder="Filter" />
+        <h2>{filteredUsers.length} {filteredUsers.length > 1 ? "Users" : "User"}</h2>
+        <Input
+          style={{width: "30rem"}}
+          placeholder="Filter"
+          onChange={(e) => setSearchFilter(e.target.value?.toLowerCase())}
+        />
         <div className="row-center">
           <Button>
               <MdSearch /> Search
@@ -77,7 +93,7 @@ const Users = () => {
       </div>
 
       <Table
-        data={users}
+        data={filteredUsers}
         columns={columns}
         onCellClick={(e, row, i, cell) => cell.column.id !== "currentShelter.shelterName" && navigate(`/users/${row.original.profile.id}`)}
       />

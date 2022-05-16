@@ -10,6 +10,7 @@ const routes = {
     },
     metrics: {
         getShelter: (id) => `Metrics/metricsAboutShelter/${id}`,
+        getAllShelters: "Metrics/metricsAboutAllShelters",
     },
     bookings: {
         checkIn: "Bookings/checkIn",

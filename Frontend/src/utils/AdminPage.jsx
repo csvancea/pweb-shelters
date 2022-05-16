@@ -12,7 +12,7 @@ const AdminPage = ({ children }) => {
     if (user && user[authSettings.rolesKey].length === 0) {
       navigate("/");
     }
-  }, [user]);
+  }, [user, navigate]);
 
   return (
     <>{children}</>

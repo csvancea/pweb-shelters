@@ -22,6 +22,16 @@ const prettyDate = (date) => {
     return day + " " + months[month] + " " + year;
 };
 
+const shortDate = (date) => {
+    const pad = (n) => (n < 10 ? "0" : "") + n;
+
+    const formattedDate = new Date(date);
+    const month = formattedDate.getMonth();
+    const day = formattedDate.getDate();
+
+    return pad(day) + "/" + pad(month);
+};
+
 const daysBetween = (startDate, endDate) => {
     const date1 = endDate ? new Date(endDate) : new Date();
     const date2 = startDate ? new Date(startDate) : new Date();
@@ -31,4 +41,4 @@ const daysBetween = (startDate, endDate) => {
     return diffDays + (diffDays === 1 ? " day" : " days");
 };
 
-export { prettyDate, daysBetween };
+export { prettyDate, shortDate, daysBetween };

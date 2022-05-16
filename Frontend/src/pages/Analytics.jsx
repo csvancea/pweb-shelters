@@ -1,28 +1,38 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import Input from "../components/Input";
 import PageLayout from "../utils/PageLayout";
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
+  PointElement,
+  LineElement,
   BarElement,
+  ArcElement,
   Title,
   Tooltip,
   Legend,
 } from "chart.js";
-import { Bar } from "react-chartjs-2";
+import { Line, Bar, Pie } from "react-chartjs-2";
 import ChartDataLabels from "chartjs-plugin-datalabels";
+import { useAuth0 } from "@auth0/auth0-react";
+import { routes } from "../configs/Api";
+import axiosInstance from "../configs/Axios";
+import { shortDate } from "../utils/Functions";
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
   BarElement,
+  ArcElement,
+  PointElement,
+  LineElement,
   Title,
   Tooltip,
   Legend
 );
 
-export const options = (entity) => ({
+const topShelterOptions = (labels) => ({
   maintainAspectRatio: false,
   showAllTooltips: true,
   legend: {
@@ -46,7 +56,7 @@ export const options = (entity) => ({
       enabled: true,
     },
     datalabels: {
-      formatter: (v, context) => `${entity} ${context.dataIndex + 1}`,
+      formatter: (v, context) => labels[context.dataIndex],
       font: {
         weight: "bold",
       },
@@ -63,8 +73,11 @@ export const options = (entity) => ({
   scales: {
     x: {
       grid: {
-        display: false,
+        display: false
       },
+      ticks: {
+        precision: 0
+      }
     },
     y: {
       grid: {
@@ -77,24 +90,112 @@ export const options = (entity) => ({
   },
 });
 
-const Analytics = () => {
-  const procentage = Math.floor(1100 / 23);
-  const [value, setValue] = useState(3);
+const evolutionOptions = {
+  maintainAspectRatio: false,
+  responsive: true,
+  plugins: {
+    legend: {
+      display: false
+    },
+    title: {
+      display: false,
+    },
+    datalabels: {
+      display: false,
+    },
+  },
+  scales: {
+    y: {
+      ticks: {
+        precision: 0
+      }
+    }
+  }
+};
 
-  const labels = useMemo(
-    () => [...Array(value)].map((_, index) => `${index + 1}`),
-    [value]
-  );
+const groupAges = (ageDistribution) => {
+  return [
+    {
+      label: '0-7',
+      count: ageDistribution.filter(x => x.age >= 0 && x.age <= 7).reduce((accumulator, x) => {return accumulator + x.count;}, 0)
+    },
+    {
+      label: '8-17',
+      count: ageDistribution.filter(x => x.age >= 8 && x.age <= 17).reduce((accumulator, x) => {return accumulator + x.count;}, 0)     
+    },
+    {
+      label: '18-59',
+      count: ageDistribution.filter(x => x.age >= 18 && x.age <= 59).reduce((accumulator, x) => {return accumulator + x.count;}, 0)     
+    },
+    {
+      label: '60+',
+      count: ageDistribution.filter(x => x.age >= 60).reduce((accumulator, x) => {return accumulator + x.count;}, 0)     
+    }
+]
+};
+
+const Analytics = () => {
+  const { getAccessTokenSilently } = useAuth0();
+  const [metrics, setMetrics] = useState({refugeeCounts: [], ageDistribution: [], topShelters: []});
+  const [days, setDays] = useState(7);
+  const [top, setTop] = useState(3);
+
+  const getMetrics = useCallback(async () => {
+    const accessToken = await getAccessTokenSilently();
+    axiosInstance
+      .get(routes.metrics.getAllShelters, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then(({ data }) => {console.log(data); setMetrics(data)});
+  }, [getAccessTokenSilently]);
+
+  useEffect(() => {
+    getMetrics();
+  }, [getMetrics]);
 
   const data = useMemo(
     () => ({
-      labels,
+      labels: metrics.refugeeCounts.map(r => shortDate(r.date)).slice(-days),
       datasets: [
         {
-          data: labels
-            .map(() => Math.random() * 100)
-            .sort()
-            .reverse(),
+          data: metrics.refugeeCounts.map(r => r.count).slice(-days),
+          lineTension: 0.4,
+          borderColor: "#B6A0F2",
+          backgroundColor: "#B6A0F2",
+          innerHeight: "200px",
+          borderRadius: 8
+        },
+      ],
+    }),
+    [metrics.refugeeCounts, days]
+  );
+
+  const ageDistribution = useMemo(
+    () => ({
+      labels: groupAges(metrics.ageDistribution).map(r => r.label),
+      datasets: [
+        {
+          data: groupAges(metrics.ageDistribution).map(r => r.count),
+          lineTension: 0.4,
+          borderColor: "#B6A0F2",
+          backgroundColor: ["#8257ED","#B6A0F2", "#A485F2", "#D9CCF9"],
+          innerHeight: "250px",
+          borderRadius: 8
+        },
+      ],
+    }),
+    [metrics.ageDistribution]
+  );
+
+  const topShelters = useMemo(
+    () => ({
+      labels: metrics.topShelters.map(r => r.name).slice(0, top),
+      datasets: [
+        {
+          data: metrics.topShelters.map(r => r.count).slice(0, top),
+          lineTension: 0.4,
           borderColor: "#B6A0F2",
           backgroundColor: "#B6A0F2",
           innerHeight: "250px",
@@ -107,56 +208,63 @@ const Analytics = () => {
         },
       ],
     }),
-    [labels]
+    [metrics.topShelters, top]
   );
 
   return (
     <PageLayout>
       <div className="row-between">
-        <h2>Book Analytics</h2>
+        <h2>Analytics</h2>
       </div>
-      <div className="flex flex-col gap-2">
-        <p className="section-title">Rented Books (11 / 23)</p>
-        <div className="relative w-full h-12 bg-purple rounded-xl">
-          <div
-            className={`absolute bg-purple-secondary rounded-xl h-full `}
-            style={{ width: `${procentage}%` }}
-          ></div>
-        </div>
-        <div className="analytic-section">
+      <div className="flex flex-col gap-10">
+        <div>
+          <p className="mb-4 section-title">Evolution of sheltered refugees over time</p>
           <Input
+            min="2"
+            max="31"
             type="number"
-            value={value}
+            value={days}
             onChange={(e) =>
-              setValue(e.target.value && parseInt(e.target.value))
+              setDays(e.target.value && parseInt(e.target.value))
             }
-            label="Top Number"
-            placeholder="Introduce a top number"
+            label="Last X Days"
           />
+          <div className="graph">
+            <Line
+              options={evolutionOptions}
+              data={data}
+              plugins={[ChartDataLabels]}
+            />
+          </div>
         </div>
-        <div className="graph">
-          <p className="section-title mb-4">Top {value > 0 || "-"} Authors</p>
-          <Bar
-            options={options("Author")}
-            data={data}
-            plugins={[ChartDataLabels]}
+        <div>
+          <p className="mb-4 section-title">Most occupied shelters</p>
+          <Input
+            min="1"
+            max={metrics.topShelters.filter((e) => e.count > 0).length}
+            type="number"
+            value={top}
+            onChange={(e) =>
+              setTop(e.target.value && parseInt(e.target.value))
+            }
+            label="Top X Shelters"
           />
+          <div className="graph">
+            <Bar
+              data={topShelters}
+              plugins={[ChartDataLabels]}
+              options={topShelterOptions(metrics.topShelters.map(r => r.name))}
+            />
+          </div>
         </div>
-        <div className="graph">
-          <p className="section-title mb-4">Top {value > 0 || "-"} Genres</p>
-          <Bar
-            options={options("Genre")}
-            data={data}
-            plugins={[ChartDataLabels]}
-          />
-        </div>
-        <div className="graph my-12">
-          <p className="section-title mb-4">Top {value > 0 || "-"} Keywords</p>
-          <Bar
-            options={options("Keyword")}
-            data={data}
-            plugins={[ChartDataLabels]}
-          />
+        <div>
+          <p className="mb-4 section-title">Age distribution of sheltered refugees</p>
+          <div className="graph">
+            <Pie
+              data={ageDistribution}
+              options={{maintainAspectRatio: false}}
+            />
+          </div>
         </div>
       </div>
     </PageLayout>

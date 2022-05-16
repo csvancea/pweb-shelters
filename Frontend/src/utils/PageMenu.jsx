@@ -1,13 +1,12 @@
 import React from "react";
 import { Link, useLocation, useMatch, useResolvedPath } from "react-router-dom";
-import logo from "../assets/logo.svg";
-import { MdLeaderboard, MdLogout } from "react-icons/md";
+import logo from "../assets/logo.png";
+import { MdLeaderboard } from "react-icons/md";
 import { GiBarracksTent } from "react-icons/gi"
 import { HiUserCircle } from "react-icons/hi"
 import { FaHouseUser } from "react-icons/fa"
-import Avatar from "react-avatar";
-import { useAuth0 } from "@auth0/auth0-react";
 import AdminOnly from "./AdminOnly";
+import PageMenuFooter from "./PageMenuFooter";
 
 export function CustomLink({ children, to, ...props }) {
   const resolved = useResolvedPath(to);
@@ -30,12 +29,10 @@ export function CustomLink({ children, to, ...props }) {
 }
 
 const PageMenu = () => {
-  const { logout, user } = useAuth0();
-
   return (
     <div className="admin-menu relative">
       <div className="logo-container">
-        <img src={logo} alt="Weblib logo" />
+        <img src={logo} alt="logo" style={{"margin-top": "75px", "max-width": "30%"}} />
       </div>
       <nav className="admin-nav">
         <div>
@@ -56,13 +53,7 @@ const PageMenu = () => {
         </div>
       </nav>
       <div className="admin-nav-bottom absolute bottom-10">
-        <div className="nav-link">
-          <Avatar name={user.name} round="24px" size="24px" />
-          <p className="capitalize">{user.name}</p>
-        </div>
-        <Link className="nav-link active bg-black" to={"#"} onClick={() => {logout({ returnTo: window.location.origin }); }}>
-          <MdLogout /> Sign out
-        </Link>
+        <PageMenuFooter />
       </div>
     </div>
   );
