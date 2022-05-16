@@ -1,4 +1,5 @@
 ﻿using ShelterHelper.Api.Features.Metrics.ViewMetricsAboutShelter;
+using ShelterHelper.Api.Features.Metrics.ViewMetricsAboutAllShelters;
 
 namespace ShelterHelper.Api.Features.Metrics
 {
@@ -7,6 +8,7 @@ namespace ShelterHelper.Api.Features.Metrics
         internal static void AddMetricsHandlers(this IServiceCollection services)
         {
             services.AddTransient<IViewMetricsAboutSingleShelterQueryHandler, ViewMetricsAboutSingleShelterQueryHandler>();
+            services.AddTransient<IViewMetricsAboutAllSheltersQueryHandler, ViewMetricsAboutAllSheltersQueryHandler>();
         }
     }
 }
