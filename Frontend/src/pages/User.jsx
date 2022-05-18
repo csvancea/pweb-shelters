@@ -45,11 +45,11 @@ const columns = [
 ];
 
 const User = ({ self }) => {
-  const { getAccessTokenSilently } = useAuth0();
-  const { pathname, hash } = useLocation();
+  const { user, getAccessTokenSilently } = useAuth0();
+  const { pathname } = useLocation();
   const [userData, setUserData] = useState({});
   const [bookingHistory, setBookingHistory] = useState([]);
-  const [openedModal, setOpenedModal] = useState(hash === "#setup");
+  const [openedModal, setOpenedModal] = useState(false);
   const [openedExtensionModal, setOpenedExtensionModal] = useState(false);
   const navigate = useNavigate();
   const id = self === undefined ? pathname.split("/").reverse()[0] : 0;
@@ -65,6 +65,25 @@ const User = ({ self }) => {
     [userData]
   );
 
+  const registerUser = useCallback(async () => {
+    const accessToken = await getAccessTokenSilently();
+    axiosInstance
+      .post(routes.profiles.setupProfile, {Email: user.email, Name: user.name}, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then(() => {
+        setUserData({
+          profile: {
+            name: user.name,
+            email: user.email
+          }
+        });
+        setOpenedModal(true);
+      });
+  }, [user, getAccessTokenSilently]);
+
   const getUser = useCallback(async () => {
     const accessToken = await getAccessTokenSilently();
     axiosInstance
@@ -73,8 +92,15 @@ const User = ({ self }) => {
           Authorization: `Bearer ${accessToken}`,
         },
       })
-      .then(({ data }) => setUserData(data));
-  }, [getAccessTokenSilently, id]);
+      .then(({ data }) => setUserData(data))
+      .catch((e) => {
+        /* user profile not found. let's set it up! */
+        if (e.response?.status !== 401) {
+          throw e;
+        }
+        registerUser();
+      });
+  }, [getAccessTokenSilently, registerUser, id]);
 
   const getBookingHistory = useCallback(async () => {
     const accessToken = await getAccessTokenSilently();
