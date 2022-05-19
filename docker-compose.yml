@@ -1,0 +1,51 @@
+version: "3.9"
+services:
+    frontend:
+        build: ./Frontend
+        networks:
+            - back-front
+        depends_on:
+            - backend
+        ports:
+            - "3000:3000"
+
+    backend:
+        build: ./Backend
+        ports:
+            - "5002:5002"
+            - "7002:7002"
+        depends_on:
+            - db
+        networks:
+            - back-db
+            - back-front
+
+    db:
+        image: postgres:12
+        environment:
+            POSTGRES_DB: ShelterHelperDb
+            POSTGRES_USER: admin
+            POSTGRES_PASSWORD: admin
+        volumes:
+            - db-volume:/var/lib/postgresql/data
+        networks:
+            - back-db
+            - admin-db
+
+    laborator2-adminer:
+        image: adminer
+        ports:
+            - 8080:8080
+        networks:
+            - admin-db
+        depends_on:
+            - db
+
+
+networks:
+    back-db:
+    back-front:
+    admin-db:
+
+volumes:
+    db-volume:

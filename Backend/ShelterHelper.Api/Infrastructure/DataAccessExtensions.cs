@@ -11,7 +11,7 @@ namespace ShelterHelper.Api.Infrastructure
         public static void AddShelterHelperDbContext(this WebApplicationBuilder builder)
         {
             builder.Services.AddDbContext<ShelterHelperContext>(opt =>
-                opt.UseSqlServer(builder.Configuration.GetConnectionString("ShelterHelperDb")));
+                opt.UseNpgsql(builder.Configuration.GetConnectionString("ShelterHelperDb")));
         }
 
         public static void AddShelterHelperAggregateRepositories(this IServiceCollection services)

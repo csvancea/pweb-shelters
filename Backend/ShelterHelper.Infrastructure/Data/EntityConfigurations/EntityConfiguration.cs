@@ -11,12 +11,12 @@ namespace ShelterHelper.Infrastructure.Data.EntityConfigurations
         {
             builder
                 .Property(x => x.CreatedAt)
-                .HasDefaultValueSql("GETDATE()")
+                .HasDefaultValueSql("NOW()")
                 .ValueGeneratedOnAdd();
 
             builder
                 .Property(x => x.UpdatedAt)
-                .HasDefaultValueSql("GETDATE()")
+                .HasDefaultValueSql("NOW()")
                 .ValueGeneratedOnAddOrUpdate();
         }
     }
