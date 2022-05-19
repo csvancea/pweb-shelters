@@ -32,7 +32,7 @@ services:
             - back-db
             - admin-db
 
-    laborator2-adminer:
+    adminer:
         image: adminer
         ports:
             - 8080:8080
