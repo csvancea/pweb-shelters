@@ -103,15 +103,17 @@ const Shelter = () => {
 
   const handleDelete = () => {
     (async () => {
-      alert("Are you sure you want to delete this shelter?");
-      const accessToken = await getAccessTokenSilently();
-      axiosInstance
-      .delete(routes.shelters.deleteShelter(id), {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .then(() => navigate("/shelters"));
+      const action = window.confirm("Are you sure you want to delete this shelter?");
+      if (action) {
+        const accessToken = await getAccessTokenSilently();
+        axiosInstance
+          .delete(routes.shelters.deleteShelter(id), {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          })
+          .then(() => navigate("/shelters"));
+      }
     })();
   };
 
@@ -136,12 +138,14 @@ const Shelter = () => {
           <Button onClick={() => setOpenedModal(true)}>
             <MdEdit /> Edit
           </Button>
-          <Button
-            className="delete-button"
-            onClick={() => handleDelete()}
-          >
-            <MdDelete /> Delete
-          </Button>
+          { metricsInfo.totalNumberOfRefugees === 0 &&
+            <Button
+              className="delete-button"
+              onClick={() => handleDelete()}
+            >
+              <MdDelete /> Delete
+            </Button>
+          }
         </div>
       </div>
       <div className="flex flex-col gap-10">
