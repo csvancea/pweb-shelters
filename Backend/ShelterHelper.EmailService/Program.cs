@@ -12,10 +12,10 @@ IHost host = Host.CreateDefaultBuilder(args)
             x.AddConsumers(Assembly.GetExecutingAssembly());
             x.UsingRabbitMq((context, cfg) =>
             {
-                cfg.Host("localhost", "/", h =>
+                cfg.Host(config.GetValue<Uri>("RabbitMq:Uri"), h =>
                 {
-                    h.Username("guest");
-                    h.Password("guest");
+                    h.Username(config["RabbitMq:Username"]);
+                    h.Password(config["RabbitMq:Password"]);
                 });
 
                 cfg.ReceiveEndpoint("shelter-emailservice-listener", e =>
