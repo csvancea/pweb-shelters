@@ -166,7 +166,7 @@ const Shelter = () => {
           </div>
         </div>
         <div className="flex flex-col gap-5 w-full p-[1px]">
-          <p className="section-title">Last 5 refugees</p>
+          <p className="section-title">Current refugees</p>
           { metricsInfo?.refugeeHistory && <Table data={metricsInfo.refugeeHistory} columns={columns} /> }
         </div>
       </div>
