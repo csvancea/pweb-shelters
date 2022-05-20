@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import { routes } from "../configs/Api";
 import axiosInstance from "../configs/Axios";
+import { authSettings } from "../configs/AuthSettings";
 import { prettyDate } from "../utils/Functions";
 
 const columns = [
@@ -59,12 +60,24 @@ const columns = [
 
 const Shelters = () => {
   const navigate = useNavigate();
+  const [userData, setUserData] = useState({});
   const [shelters, setShelters] = useState([]);
   const [filteredShelters, setFilteredShelters] = useState([]);
   const [openedModal, setOpenedModal] = useState(false);
   const [openedRentModal, setOpenedRentModal] = useState(null);
   const [searchFilter, setSearchFilter] = useState("");
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, user } = useAuth0();
+
+  const getUser = useCallback(async () => {
+    const accessToken = await getAccessTokenSilently();
+    axiosInstance
+      .get(routes.profiles.getProfile(0), {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then(({ data }) => setUserData(data));
+  }, [getAccessTokenSilently]);
 
   const getAllShelters = useCallback(async () => {
     const accessToken = await getAccessTokenSilently();
@@ -104,8 +117,13 @@ const Shelters = () => {
   };
 
   useEffect(() => {
+    const isAdmin = user && (user[authSettings.rolesKey].length !== 0);
+
     getAllShelters();
-  }, [getAllShelters]);
+    if (!isAdmin) {
+      getUser();
+    }
+  }, [getAllShelters, getUser, user]);
 
   useEffect(() => {
     if (searchFilter) {
@@ -166,7 +184,7 @@ const Shelters = () => {
         <Table
           data={filteredShelters}
           columns={columns}
-          onCellClick={(e, row, i, cell) => cell.column.id !== "address" && setOpenedRentModal(row.original)}
+          onCellClick={(e, row, i, cell) => cell.column.id !== "address" && userData.currentShelter == null && row.original.numberOfUsers < row.original.capacity && setOpenedRentModal(row.original)}
         />
       </UserOnly>
     </PageLayout>
