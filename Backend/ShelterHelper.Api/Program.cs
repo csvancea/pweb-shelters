@@ -1,7 +1,7 @@
 using ShelterHelper.Api.Authorization;
 using ShelterHelper.Api.Infrastructure;
 using ShelterHelper.Api.Web;
-using MediatR;
+using MassTransit;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,8 +33,20 @@ builder.AddAuthenticationAndAuthorization();
 // Add Database Context
 builder.AddShelterHelperDbContext();
 
-// Add MediatR
-builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
+// Add MassTransit RabbitMq
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumers(Assembly.GetExecutingAssembly());
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host("localhost", "/", h =>
+        {
+            h.Username("guest");
+            h.Password("guest");
+        });
+        cfg.ConfigureEndpoints(context);
+    });
+});
 
 // Add Repositories
 builder.Services.AddShelterHelperAggregateRepositories();
