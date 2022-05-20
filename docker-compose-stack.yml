@@ -8,11 +8,22 @@ services:
             - backend
         ports:
             - "3000:3000"
-
+        deploy:
+            replicas: 2
+            placement:
+                max_replicas_per_node: 1
     backend:
         image: joanna14/backend:v2
         ports:
-            - "5002:5002"
+            - "5002:5002"     
+        deploy:
+            replicas: 2
+            placement:
+                max_replicas_per_node: 1
+            update_config:
+                order: start-first
+            rollback_config:
+                order: stop-first    
         depends_on:
             - db
         networks:
@@ -25,6 +36,10 @@ services:
             POSTGRES_DB: ShelterHelperDb
             POSTGRES_USER: admin
             POSTGRES_PASSWORD: admin
+        deploy:
+            placement:
+                constraints:
+                    - "node.role==manager"
         volumes:
             - db-volume:/var/lib/postgresql/data
         networks:

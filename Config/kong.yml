@@ -1,0 +1,23 @@
+_format_version: "2.1"
+
+services:
+  - name: backend
+    url: http://backend:5002/api/v1
+    routes:
+      - name: backend-route
+        paths: 
+          - /api/v1
+          
+  - name: db-adminer
+    url: http://adminer:8080
+    routes:
+      - name: adminer-service
+        paths:
+          - /adminer
+
+  - name: frontend
+    url: http://frontend:3000
+    routes:
+      - name: frontend-route
+        paths:
+          - /app 

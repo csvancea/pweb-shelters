@@ -1,0 +1,88 @@
+version: "3.9"
+services:
+    frontend:
+        image: joanna14/frontend:v2
+        networks:
+            - external
+        depends_on:
+            - backend
+        ports:
+            - "3000:3000"
+        deploy:
+            replicas: 2
+            placement:
+                max_replicas_per_node: 1
+    backend:
+        image: joanna14/backend:v2
+        ports:
+            - "5002:5002"     
+        deploy:
+            replicas: 2
+            placement:
+                max_replicas_per_node: 1
+            update_config:
+                order: start-first
+            rollback_config:
+                order: stop-first    
+        depends_on:
+            - db
+        networks:
+            - back-db
+            - internal
+
+    db:
+        image: postgres:12
+        environment:
+            POSTGRES_DB: ShelterHelperDb
+            POSTGRES_USER: admin
+            POSTGRES_PASSWORD: admin
+        deploy:
+            placement:
+                constraints:
+                    - "node.role==manager"
+        volumes:
+            - db-volume:/var/lib/postgresql/data
+        networks:
+            - back-db
+            - admin-db
+
+    adminer:
+        image: adminer
+        ports:
+            - 8080:8080
+        networks:
+            - admin-db
+            - internal
+
+    kong:
+        image: kong:latest
+        volumes:
+            - ./Config:/usr/local/kong/declarative
+        environment:
+            KONG_DATABASE: 'off'
+            KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml
+            KONG_PROXY_ACCESS_LOG: /dev/stdout
+            KONG_ADMIN_ACCESS_LOG: /dev/stdout
+            KONG_PROXY_ERROR_LOG: /dev/stderr
+            KONG_ADMIN_ERROR_LOG: /dev/stderr
+            KONG_ADMIN_LISTEN: 0.0.0.0:8001, 0.0.0.0:8444 ssl
+        ports:
+            - 8000:8000
+            - 8443:8443
+            - 8001:8001
+            - 8444:8444
+        deploy:
+            placement:
+                constraints: [node.role == manager]
+        networks:
+            - external
+            - internal
+
+networks:
+    back-db:
+    admin-db:
+    internal:
+    external:
+
+volumes:
+    db-volume:
