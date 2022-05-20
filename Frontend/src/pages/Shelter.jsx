@@ -32,7 +32,7 @@ const columns = [
     Cell: ({ cell: { value } }) => prettyDate(value)
   },
   {
-    Header: "Checkout Date",
+    Header: "Expected Checkout Date",
     accessor: "checkOutDate",
     Cell: ({ cell: { value } }) => prettyDate(value)
   }
@@ -103,15 +103,17 @@ const Shelter = () => {
 
   const handleDelete = () => {
     (async () => {
-      alert("Are you sure you want to delete this shelter?");
-      const accessToken = await getAccessTokenSilently();
-      axiosInstance
-      .delete(routes.shelters.deleteShelter(id), {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .then(() => navigate("/shelters"));
+      const action = window.confirm("Are you sure you want to delete this shelter?");
+      if (action) {
+        const accessToken = await getAccessTokenSilently();
+        axiosInstance
+          .delete(routes.shelters.deleteShelter(id), {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          })
+          .then(() => navigate("/shelters"));
+      }
     })();
   };
 
@@ -136,12 +138,14 @@ const Shelter = () => {
           <Button onClick={() => setOpenedModal(true)}>
             <MdEdit /> Edit
           </Button>
-          <Button
-            className="delete-button"
-            onClick={() => handleDelete()}
-          >
-            <MdDelete /> Delete
-          </Button>
+          { metricsInfo.totalNumberOfRefugees === 0 &&
+            <Button
+              className="delete-button"
+              onClick={() => handleDelete()}
+            >
+              <MdDelete /> Delete
+            </Button>
+          }
         </div>
       </div>
       <div className="flex flex-col gap-10">
@@ -153,12 +157,12 @@ const Shelter = () => {
               <div className="statistic-card">
                 <div className="card-statistic">
                   <p>{ metricsInfo.totalNumberOfRefugees }</p>
-                  <p>refugees</p>
+                  <p>{ metricsInfo.totalNumberOfRefugees === 1 ? "refugee" : "refugees" }</p>
                 </div>
               </div>
               <div className="statistic-card">
                 <div className="card-statistic">
-                  <p>{ Math.floor(metricsInfo.averageRefugeeAge) } years</p>
+                  <p>{ metricsInfo.totalNumberOfRefugees === 0 ? "-" : `${Math.floor(metricsInfo.averageRefugeeAge)} years` }</p>
                   <p>avg. age of refugees</p>
                 </div>
               </div>
@@ -166,8 +170,14 @@ const Shelter = () => {
           </div>
         </div>
         <div className="flex flex-col gap-5 w-full p-[1px]">
-          <p className="section-title">Last 5 refugees</p>
-          { metricsInfo?.refugeeHistory && <Table data={metricsInfo.refugeeHistory} columns={columns} /> }
+          <p className="section-title">Sheltered refugees</p>
+          { metricsInfo?.refugeeHistory && 
+            <Table
+              data={metricsInfo.refugeeHistory}
+              columns={columns}
+              onRowClick={(e, row, i) => navigate(`/users/${row.original.id}`)}
+            /> 
+          }
         </div>
       </div>
     </PageLayout>

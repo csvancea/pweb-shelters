@@ -18,7 +18,7 @@ namespace ShelterHelper.Api.Features.Metrics.ViewMetricsAboutShelter
             var query = from shelter in dbContext.Shelters
                         where shelter.Id == shelterId
                         join booking in dbContext.Bookings.Include(x => x.User)
-                            on shelter.Id equals booking.ShelterId into grouping
+                            on new { ShelterId = shelter.Id, ActualCheckOutDate = (DateTime?)null } equals new { booking.ShelterId, booking.ActualCheckOutDate } into grouping
                         from booking in grouping.DefaultIfEmpty()
                         orderby booking.Id descending
                         select new ShelterBookingQueryDto(shelter, booking);
