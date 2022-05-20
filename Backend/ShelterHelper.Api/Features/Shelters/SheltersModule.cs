@@ -4,7 +4,7 @@ using ShelterHelper.Api.Features.Shelters.DeleteShelter;
 using ShelterHelper.Api.Features.Shelters.ViewAllShelters;
 using ShelterHelper.Api.Features.Shelters.ViewStatusAboutShelter;
 
-namespace ShelterHelper.Api.Features.Shelter
+namespace ShelterHelper.Api.Features.Shelters
 {
     internal static class SheltersModule
     {

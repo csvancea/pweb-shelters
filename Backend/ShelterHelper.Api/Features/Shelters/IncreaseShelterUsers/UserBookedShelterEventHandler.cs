@@ -1,12 +1,12 @@
 ﻿using ShelterHelper.Api.Web;
 using ShelterHelper.Core.Domain.Shelter;
 using ShelterHelper.Core.Domain.UserBookings;
-using MediatR;
+using MassTransit;
 using System.Net;
 
 namespace ShelterHelper.Api.Features.Shelters.IncreaseShelterUsers
 {
-    public class UserBookedShelterEventHandler : INotificationHandler<UserBookedShelterEvent>
+    public class UserBookedShelterEventHandler : IConsumer<UserBookedShelterEvent>
     {
         private readonly ISheltersRepository sheltersRepository;
 
@@ -15,18 +15,18 @@ namespace ShelterHelper.Api.Features.Shelters.IncreaseShelterUsers
             this.sheltersRepository = sheltersRepository;
         }
 
-        public async Task Handle(UserBookedShelterEvent notification, CancellationToken cancellationToken)
+        public async Task Consume(ConsumeContext<UserBookedShelterEvent> notification)
         {
-            var shelter = await sheltersRepository.GetAsync(notification.ShelterId, cancellationToken) as SheltersDomain;
-
+            var shelter = await sheltersRepository.GetAsync(notification.Message.ShelterId, notification.CancellationToken) as SheltersDomain;
+        
             if (shelter == null)
             {
-                throw new ApiException(HttpStatusCode.NotFound, $"Shelter with id {notification.ShelterId} not found!");
+                throw new ApiException(HttpStatusCode.NotFound, $"Shelter with id {notification.Message.ShelterId} not found!");
             }
-
+        
             shelter.IncreaseShelterUsers();
-
-            await sheltersRepository.SaveAsync(cancellationToken);
+        
+            await sheltersRepository.SaveAsync(notification.CancellationToken);
         }
     }
 }

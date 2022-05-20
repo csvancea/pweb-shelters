@@ -1,8 +1,6 @@
 using ShelterHelper.Api.Authorization;
 using ShelterHelper.Api.Infrastructure;
 using ShelterHelper.Api.Web;
-using MediatR;
-using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,8 +31,8 @@ builder.AddAuthenticationAndAuthorization();
 // Add Database Context
 builder.AddShelterHelperDbContext();
 
-// Add MediatR
-builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
+// Add MassTransit RabbitMq
+builder.AddMassTransitService();
 
 // Add Repositories
 builder.Services.AddShelterHelperAggregateRepositories();

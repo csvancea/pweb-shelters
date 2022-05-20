@@ -1,7 +1,7 @@
 ﻿using ShelterHelper.Api.Web;
 using ShelterHelper.Core.Domain.Shelter;
 using ShelterHelper.Core.Domain.UserBookings;
-using MediatR;
+using MassTransit;
 using System.Net;
 
 namespace ShelterHelper.Api.Features.Bookings.ShelterCheckIn
@@ -10,9 +10,9 @@ namespace ShelterHelper.Api.Features.Bookings.ShelterCheckIn
     {
         private readonly ISheltersRepository sheltersRepository;
         private readonly IUsersBookingsRepository usersBookingsRepository;
-        private readonly IMediator mediator;
+        private readonly IBus mediator;
 
-        public ShelterCheckInCommandHandler(ISheltersRepository sheltersRepository, IUsersBookingsRepository usersBookingsRepository, IMediator mediator)
+        public ShelterCheckInCommandHandler(ISheltersRepository sheltersRepository, IUsersBookingsRepository usersBookingsRepository, IBus mediator)
         {
             this.sheltersRepository = sheltersRepository;
             this.usersBookingsRepository = usersBookingsRepository;

@@ -1,4 +1,4 @@
-﻿using ShelterHelper.Api.Features.Shelter;
+﻿using ShelterHelper.Api.Features.Shelters;
 using ShelterHelper.Api.Features.Metrics;
 using ShelterHelper.Api.Features.Profiles;
 using ShelterHelper.Api.Features.Bookings;

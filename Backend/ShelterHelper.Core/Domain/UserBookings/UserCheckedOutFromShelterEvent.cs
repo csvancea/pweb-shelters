@@ -1,10 +1,8 @@
-﻿using MediatR;
-
-namespace ShelterHelper.Core.Domain.UserBookings
+﻿namespace ShelterHelper.Core.Domain.UserBookings
 {
-    public record UserCheckedOutFromShelterEvent : INotification
+    public record UserCheckedOutFromShelterEvent
     {
-        public int ShelterId { get; private set; }
+        public int ShelterId { get; init; }
         public UserCheckedOutFromShelterEvent(int shelterId)
         {
             ShelterId = shelterId;   
