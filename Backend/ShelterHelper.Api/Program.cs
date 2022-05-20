@@ -44,6 +44,12 @@ builder.Services.AddMassTransit(x =>
             h.Username("guest");
             h.Password("guest");
         });
+
+        cfg.ReceiveEndpoint("shelter-api-listener", e =>
+        {
+            e.ConfigureConsumers(context);
+        });
+
         cfg.ConfigureEndpoints(context);
     });
 });
