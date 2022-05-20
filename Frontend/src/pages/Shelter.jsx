@@ -32,7 +32,7 @@ const columns = [
     Cell: ({ cell: { value } }) => prettyDate(value)
   },
   {
-    Header: "Checkout Date",
+    Header: "Expected Checkout Date",
     accessor: "checkOutDate",
     Cell: ({ cell: { value } }) => prettyDate(value)
   }
@@ -153,12 +153,12 @@ const Shelter = () => {
               <div className="statistic-card">
                 <div className="card-statistic">
                   <p>{ metricsInfo.totalNumberOfRefugees }</p>
-                  <p>refugees</p>
+                  <p>{ metricsInfo.totalNumberOfRefugees === 1 ? "refugee" : "refugees" }</p>
                 </div>
               </div>
               <div className="statistic-card">
                 <div className="card-statistic">
-                  <p>{ Math.floor(metricsInfo.averageRefugeeAge) } years</p>
+                  <p>{ metricsInfo.totalNumberOfRefugees === 0 ? "-" : `${Math.floor(metricsInfo.averageRefugeeAge)} years` }</p>
                   <p>avg. age of refugees</p>
                 </div>
               </div>
@@ -166,8 +166,14 @@ const Shelter = () => {
           </div>
         </div>
         <div className="flex flex-col gap-5 w-full p-[1px]">
-          <p className="section-title">Current refugees</p>
-          { metricsInfo?.refugeeHistory && <Table data={metricsInfo.refugeeHistory} columns={columns} /> }
+          <p className="section-title">Sheltered refugees</p>
+          { metricsInfo?.refugeeHistory && 
+            <Table
+              data={metricsInfo.refugeeHistory}
+              columns={columns}
+              onRowClick={(e, row, i) => navigate(`/users/${row.original.id}`)}
+            /> 
+          }
         </div>
       </div>
     </PageLayout>
