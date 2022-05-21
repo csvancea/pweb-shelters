@@ -118,6 +118,10 @@ label {
     @apply w-full px-4 py-3 border-2 rounded-lg outline-none border-gray text-base font-semibold;
 }
 
+.input-analytics {
+    @apply w-fit px-0 py-0 mx-2 text-center outline-4
+}
+
 .input:focus {
     @apply border-purple-secondary;
 }

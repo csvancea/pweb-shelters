@@ -219,7 +219,9 @@ const Analytics = () => {
       <div className="flex flex-col gap-10">
         <div>
           <p className="mb-4 section-title">Evolution of sheltered refugees over time</p>
+          <label>Last</label>
           <Input
+            className="input-analytics"
             min="2"
             max="31"
             type="number"
@@ -227,8 +229,8 @@ const Analytics = () => {
             onChange={(e) =>
               setDays(e.target.value && parseInt(e.target.value))
             }
-            label="Last X Days"
           />
+          <label>days</label>
           <div className="graph">
             <Line
               options={evolutionOptions}
@@ -239,7 +241,9 @@ const Analytics = () => {
         </div>
         <div>
           <p className="mb-4 section-title">Most occupied shelters</p>
+          <label>Top</label>
           <Input
+            className="input-analytics"
             min="1"
             max={metrics.topShelters.filter((e) => e.count > 0).length}
             type="number"
@@ -247,8 +251,8 @@ const Analytics = () => {
             onChange={(e) =>
               setTop(e.target.value && parseInt(e.target.value))
             }
-            label="Top X Shelters"
           />
+          <label>Shelters</label>
           <div className="graph">
             <Bar
               data={topShelters}
