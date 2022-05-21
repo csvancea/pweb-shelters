@@ -198,7 +198,9 @@ const User = ({ self }) => {
       <div className="row-between">
         <h2>{userData.profile?.name}</h2>
         <div className="row-center">
-          <Button onClick={() => setOpenedModal(true)}>
+          <Button 
+          className="edit-button"
+          onClick={() => setOpenedModal(true)}>
             <MdEdit /> Edit
           </Button>
           {userData.currentShelter == null &&
