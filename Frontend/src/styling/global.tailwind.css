@@ -130,11 +130,11 @@ label {
 }
 
 .keyword-list-active {
-    @apply p-4 rounded-3xl bg-purple text-white font-semibold text-sm;
+    @apply p-4 rounded-3xl bg-blue-secondary text-white font-semibold text-sm;
 }
 
 .keyword-list-inactive {
-    @apply p-4 rounded-3xl bg-red text-white font-semibold text-sm;
+    @apply p-4 rounded-3xl bg-gray text-white font-semibold text-sm;
 }
 /*
 .keyword-list>span {
@@ -173,12 +173,16 @@ label {
     @apply bg-red;
 }
 
+.checkout-button {
+    @apply bg-black;
+}
+
 .search-button {
     @apply bg-yellow;
 }
 
 .edit-button {
-    @apply bg-blue-secondary
+    @apply bg-yellow;
 }
 
 .search-filter {

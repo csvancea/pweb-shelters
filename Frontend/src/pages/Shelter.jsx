@@ -52,7 +52,7 @@ const Shelter = () => {
       { key: "Name", value: shelterInfo.name },
       { key: "Address", value: shelterInfo.address },
       { key: "Google Maps", value: <a className="link" href={shelterInfo.mapsLink}> <GiEarthAfricaEurope /> </a> },
-      { key: "Rental Days", value: shelterInfo.maximumDaysForRental + " days" },
+      { key: "Max. Rental Days", value: shelterInfo.maximumDaysForRental + " days" },
       { key: "Capacity", value: `${shelterInfo.numberOfUsers} / ${shelterInfo.capacity}` },
       {
         key: "Tags",
@@ -170,7 +170,7 @@ const Shelter = () => {
           </div>
         </div>
         <div className="flex flex-col gap-5 w-full p-[1px]">
-          <p className="section-title">Sheltered refugees</p>
+          <p className="section-title">Sheltered Refugees</p>
           { metricsInfo?.refugeeHistory && 
             <Table
               data={metricsInfo.refugeeHistory}

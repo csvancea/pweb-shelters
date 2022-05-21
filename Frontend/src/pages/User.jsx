@@ -203,7 +203,7 @@ const User = ({ self }) => {
           onClick={() => setOpenedModal(true)}>
             <MdEdit /> Edit
           </Button>
-          {userData.currentShelter == null &&
+          {userData.currentShelter == null && id !== 0 &&
             <AdminOnly>
               <Button
                 className="delete-button"
@@ -220,7 +220,7 @@ const User = ({ self }) => {
           <Section title={"Profile Details"} fields={userFields} />
           {userData.currentShelter != null &&
           <div className="flex flex-col gap-5">
-            <p className="section-title">Current accomodation</p>
+            <p className="section-title">Current Accommodation</p>
             <div className="flex gap-5">
               <div className="statistic-card">
                 <div className="card-statistic">
@@ -240,10 +240,10 @@ const User = ({ self }) => {
               style={{width: "auto"}}
               onClick={() => setOpenedExtensionModal(true)}
             >
-              <BsPlusLg /> Extend accomodation
+              <BsPlusLg /> Extend accommodation
             </Button>
             <Button
-              className="delete-button"
+              className="checkout-button"
               style={{width: "auto"}}
               onClick={() => handleCheckOut()}
             >
@@ -252,7 +252,7 @@ const User = ({ self }) => {
           </div> }
         </div>
         <div className="flex flex-col gap-5 w-full p-[1px]">
-          <p className="section-title">Accomodation history</p>
+          <p className="section-title">Accommodation History</p>
           <AdminOnly>
             <Table
               data={bookingHistory}

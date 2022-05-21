@@ -162,8 +162,8 @@ const Analytics = () => {
         {
           data: metrics.refugeeCounts.map(r => r.count).slice(-days),
           lineTension: 0.4,
-          borderColor: "#B6A0F2",
-          backgroundColor: "#B6A0F2",
+          borderColor: "#17A9FA",
+          backgroundColor: "#17A9FA",
           innerHeight: "200px",
           borderRadius: 8
         },
@@ -179,8 +179,8 @@ const Analytics = () => {
         {
           data: groupAges(metrics.ageDistribution).map(r => r.count),
           lineTension: 0.4,
-          borderColor: "#B6A0F2",
-          backgroundColor: ["#8257ED","#B6A0F2", "#A485F2", "#D9CCF9"],
+          borderColor: "#FFFFFF",
+          backgroundColor: ["#2D6CA3", "#17a9fa","#00cadd", "#00d1be"],
           innerHeight: "250px",
           borderRadius: 8
         },
@@ -196,8 +196,8 @@ const Analytics = () => {
         {
           data: metrics.topShelters.map(r => r.count).slice(0, top),
           lineTension: 0.4,
-          borderColor: "#B6A0F2",
-          backgroundColor: "#B6A0F2",
+          borderColor: "#17A9FA",
+          backgroundColor: "#17A9FA",
           innerHeight: "250px",
           borderRadius: 8,
           datalabels: {

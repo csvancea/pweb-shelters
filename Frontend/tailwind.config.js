@@ -24,7 +24,7 @@ module.exports = {
                 DEFAULT: "#B6A0F2",
             },
             blue: {
-                primary: "#17A9FA",
+                primary: "#2D6CA3",
                 secondary: "#041793"
             },
             gray: {
@@ -34,7 +34,7 @@ module.exports = {
             red: {
                 DEFAULT: "#F45858",
             },
-            yellow: "#FED513",
+            yellow: "#f3ca0c",
         },
     },
     plugins: [],
