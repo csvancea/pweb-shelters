@@ -56,7 +56,7 @@ const topShelterOptions = (labels) => ({
       enabled: true,
     },
     datalabels: {
-      formatter: (v, context) => labels[context.dataIndex],
+      formatter: (_, context) => labels[context.dataIndex],
       font: {
         weight: "bold",
       },

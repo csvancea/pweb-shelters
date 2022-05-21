@@ -140,12 +140,14 @@ const Shelters = () => {
           {filteredShelters.length} {filteredShelters.length > 1 ? "Shelters" : "Shelter"}
         </h2>
         <Input
+          className="search-filter"
           style={{width: "30rem"}}
           placeholder="Filter"
           onChange={(e) => setSearchFilter(e.target.value?.toLowerCase())}
         />
         <div className="row-center">
-          <Button>
+          <Button
+          className="search-button">
               <MdSearch /> Search
           </Button>
           <AdminOnly>
