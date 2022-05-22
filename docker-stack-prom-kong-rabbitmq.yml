@@ -99,7 +99,7 @@ services:
       hostname: rabbitmq
 
     emailservice:
-      build: ./Backend/ShelterHelper.EmailService
+      build: ./worker
       ports:
         - 6000:6000
       depends_on:
