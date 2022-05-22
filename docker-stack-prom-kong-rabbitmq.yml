@@ -19,6 +19,7 @@ services:
             - back-db
             - internal
             - logging
+            - rabbit-network
 
     db:
         image: postgres:12
@@ -68,6 +69,7 @@ services:
             - external
             - internal
             - logging
+            - rabbit-network
 
     grafana:
       image: grafana/grafana:latest
@@ -87,12 +89,29 @@ services:
       networks:
         - logging
 
+    rabbitmq:
+      image: rabbitmq:management-alpine
+      ports:
+        - 5672:5672
+        - 15672:15672
+      networks:
+        - rabbit-network
+      hostname: rabbitmq
+
+    emailservice:
+      build: ./Backend/ShelterHelper.EmailService
+      depends_on:
+        - rabbitmq
+      networks:
+        - rabbit-network
+
 networks:
     back-db:
     admin-db:
     internal:
     external:
     logging:
+    rabbit-network:
 
 volumes:
     db-volume:

@@ -12,7 +12,7 @@ services:
     backend:
         image: joanna14/backend:v3
         ports:
-            - "5002:5002"       
+            - "5002:5002"
         depends_on:
             - db
         networks:
@@ -47,7 +47,7 @@ services:
     kong:
         image: kong:latest
         volumes:
-            - ./Config:/usr/local/kong/declarative
+            - ./kong:/usr/local/kong/declarative
         environment:
             KONG_DATABASE: 'off'
             KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml
