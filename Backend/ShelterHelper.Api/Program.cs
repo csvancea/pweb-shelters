@@ -16,7 +16,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: "DevelopmentCorsPolicy",
         policy =>
         {
-            policy.WithOrigins("http://frontend:3000")
+            policy.SetIsOriginAllowed(origin => true)
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });

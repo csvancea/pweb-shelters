@@ -18,7 +18,7 @@ services:
         networks:
             - back-db
             - internal
-            - external
+            - logging
 
     db:
         image: postgres:12
@@ -58,7 +58,7 @@ services:
             KONG_ADMIN_LISTEN: 0.0.0.0:8001, 0.0.0.0:8444 ssl
         ports:
             - 80:8000
-            - 443:8443
+            - 43:8443
             - 8001:8001
             - 8444:8444
         deploy:
@@ -67,12 +67,32 @@ services:
         networks:
             - external
             - internal
+            - logging
+
+    grafana:
+      image: grafana/grafana:latest
+      environment:
+        GF_SERVER_HTTP_PORT: 3001
+      ports:
+        - 3001:3001
+      networks:
+        - logging
+    
+    prometheus:
+      image: prom/prometheus
+      volumes:
+        - ./prometheus/prom.yml:/etc/prometheus/prometheus.yml
+      ports:
+        - 9090:9090
+      networks:
+        - logging
 
 networks:
     back-db:
     admin-db:
     internal:
     external:
+    logging:
 
 volumes:
-    db-volume:
+    db-volume:  

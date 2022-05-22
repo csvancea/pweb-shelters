@@ -1,24 +1,23 @@
-version: "3.8"
+version: "3.9"
 services:
     frontend:
         image: joanna14/frontend:v3
-        networks:
-            - external
         depends_on:
             - backend
         ports:
             - "3000:3000"
-
     backend:
         image: joanna14/backend:v3
         ports:
-            - "5002:5002"       
-        depends_on:
-            - db
+            - "5002:5002"
+        logging:
+            driver: loki
+            options:
+                loki-url: http://host.docker.internal:3100/loki/api/v1/push       
         networks:
             - back-db
-            - internal
-            - external
+            - back-front
+            - logging
 
     db:
         image: postgres:12
@@ -42,37 +41,44 @@ services:
             - 8080:8080
         networks:
             - admin-db
-            - internal
+        depends_on:
+            - db
 
-    kong:
-        image: kong:latest
+    loki:
+        image: grafana/loki
         volumes:
-            - ./Config:/usr/local/kong/declarative
-        environment:
-            KONG_DATABASE: 'off'
-            KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml
-            KONG_PROXY_ACCESS_LOG: /dev/stdout
-            KONG_ADMIN_ACCESS_LOG: /dev/stdout
-            KONG_PROXY_ERROR_LOG: /dev/stderr
-            KONG_ADMIN_ERROR_LOG: /dev/stderr
-            KONG_ADMIN_LISTEN: 0.0.0.0:8001, 0.0.0.0:8444 ssl
+            - ./loki/loki.yml:/etc/config/loki.yml
+            - ./loki/wal:/wal
+        entrypoint:
+            - /usr/bin/loki
+            - -config.file=/etc/config/loki.yml
         ports:
-            - 80:8000
-            - 443:8443
-            - 8001:8001
-            - 8444:8444
+            - 3100:3100
+        networks:
+            - logging
+            - visualizing
+
+    grafana:
+        image: grafana/grafana
+        volumes:
+            - grafana-volume:/var/lib/grafana
+        ports:
+            - 3001:3001
+        depends_on:
+            - loki
         deploy:
             placement:
                 constraints: [node.role == manager]
         networks:
-            - external
-            - internal
+            - visualizing
 
 networks:
     back-db:
+    back-front:
     admin-db:
-    internal:
-    external:
+    visualizing:
+    logging:
 
 volumes:
     db-volume:
+    grafana-volume:

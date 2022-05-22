@@ -1,4 +1,4 @@
-const base = "http://backend:5002/api/v1/";
+const base = "http://localhost:5002/api/v1/";
 const twoRoute = (route, id) => id === 0 ? route : `${route}/${id}`;
 const routes = {
     shelters: {

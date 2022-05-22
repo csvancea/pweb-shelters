@@ -2,11 +2,11 @@ _format_version: "2.1"
 
 services:
   - name: backend
-    url: http://backend:5002/api/v1
+    url: http://backend:5002
     routes:
       - name: backend-route
         paths: 
-          - /api/v1
+          - /api
           
   - name: db-adminer
     url: http://adminer:8080
@@ -20,4 +20,4 @@ services:
     routes:
       - name: frontend-route
         paths:
-          - /app 
+          - /app
