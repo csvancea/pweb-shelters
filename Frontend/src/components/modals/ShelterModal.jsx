@@ -4,7 +4,8 @@ import { MdOutlineClose } from "react-icons/md";
 import Button from "../Button";
 import Input from "../Input";
 import ToggleButton from "../ToggleButton";
-import { FaHandsHelping, FaCat } from "react-icons/fa";
+import { FaCat } from "react-icons/fa";
+import { BiHandicap } from 'react-icons/bi';
 import { useForm } from "react-hook-form";
 
 const ShelterModal = ({ modalIsOpen, closeModal, shelterData, submitForm }) => {
@@ -47,7 +48,7 @@ const ShelterModal = ({ modalIsOpen, closeModal, shelterData, submitForm }) => {
         <div className="row-between-end gap-2">
           <Input label="Maximum Capacity" placeholder="Shelter capacity" {...register("capacity")} defaultValue={shelterData ? shelterData.capacity : null} />
           <div className="keyword-list">
-            <ToggleButton defaultChecked={shelterData ? shelterData.accessibility : null} icon={<FaHandsHelping />} onChange={ (value) => setAccessibility(value) } />
+            <ToggleButton defaultChecked={shelterData ? shelterData.accessibility : null} icon={<BiHandicap />} onChange={ (value) => setAccessibility(value) } />
             <ToggleButton defaultChecked={shelterData ? shelterData.pets : null} icon={<FaCat />} onChange={ (value) => setPets(value) } />
           </div>
         </div>

@@ -6,7 +6,8 @@ import ShelterModal from "../components/modals/ShelterModal";
 import Table from "../components/Table";
 import Section from "../components/Section";
 import { GiEarthAfricaEurope } from "react-icons/gi";
-import { FaHandsHelping, FaCat } from "react-icons/fa";
+import { FaCat } from "react-icons/fa";
+import { BiHandicap } from 'react-icons/bi';
 import { useLocation, useNavigate } from "react-router-dom";
 import axiosInstance from "../configs/Axios";
 import { routes } from "../configs/Api";
@@ -58,7 +59,7 @@ const Shelter = () => {
         key: "Tags",
         value:
           <div className="keyword-list">
-            { shelterInfo.accessibility && <FaHandsHelping /> }
+            { shelterInfo.accessibility && <BiHandicap /> }
             { shelterInfo.pets && <FaCat /> }
           </div>
       }

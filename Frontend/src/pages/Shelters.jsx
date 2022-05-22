@@ -4,7 +4,8 @@ import Table from "../components/Table";
 import Input from "../components/Input";
 import PageLayout from "../utils/PageLayout";
 import { MdAdd, MdSearch } from "react-icons/md";
-import { FaHandsHelping, FaCat } from "react-icons/fa";
+import { FaCat } from "react-icons/fa";
+import { BiHandicap } from 'react-icons/bi';
 import { GiEarthAfricaEurope } from "react-icons/gi";
 import ShelterModal from "../components/modals/ShelterModal";
 import RentModal from "../components/modals/RentModal";
@@ -46,7 +47,7 @@ const columns = [
     accessor: "pets",
     Cell: ({ cell: { row } }) => (
       <div className="keyword-list">
-        { row.original.accessibility && <FaHandsHelping /> }
+        { row.original.accessibility && <BiHandicap /> }
         { row.original.pets && <FaCat /> }
       </div>
     )
