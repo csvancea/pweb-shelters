@@ -100,8 +100,6 @@ services:
 
     emailservice:
       build: ./worker
-      ports:
-        - 6000:6000
       depends_on:
         - rabbitmq
       networks:
