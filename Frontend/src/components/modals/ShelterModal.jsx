@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import ReactTooltip from "react-tooltip";
 import Modal from "react-modal";
 import { MdOutlineClose } from "react-icons/md";
 import Button from "../Button";
@@ -25,13 +26,17 @@ const ShelterModal = ({ modalIsOpen, closeModal, shelterData, submitForm }) => {
     setPets(shelterData && shelterData.pets);
   }, [shelterData]);
 
+  useEffect(() => {
+    ReactTooltip.rebuild();
+  });
+
   return (
     <Modal
       isOpen={modalIsOpen}
       onRequestClose={closeModal}
       contentLabel={action}
       className="modal"
-      ariaHideApp={false} // TODO
+      ariaHideApp={false}
     >
       <div className="row-between">
         <h2>{action}</h2>
@@ -48,8 +53,8 @@ const ShelterModal = ({ modalIsOpen, closeModal, shelterData, submitForm }) => {
         <div className="row-between-end gap-2">
           <Input label="Maximum Capacity" placeholder="Shelter capacity" {...register("capacity")} defaultValue={shelterData ? shelterData.capacity : null} />
           <div className="keyword-list">
-            <ToggleButton defaultChecked={shelterData ? shelterData.accessibility : null} icon={<BiHandicap />} onChange={ (value) => setAccessibility(value) } />
-            <ToggleButton defaultChecked={shelterData ? shelterData.pets : null} icon={<FaCat />} onChange={ (value) => setPets(value) } />
+            <ToggleButton data-tip data-for="accessibilityTip" defaultChecked={shelterData ? shelterData.accessibility : null} icon={<BiHandicap />} onChange={ (value) => setAccessibility(value) } />
+            <ToggleButton data-tip data-for="petsTip" defaultChecked={shelterData ? shelterData.pets : null} icon={<FaCat />} onChange={ (value) => setPets(value) } />
           </div>
         </div>
         <Button type="button" onClick={handleSubmit(handleClick)}>

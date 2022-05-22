@@ -148,7 +148,7 @@ const Analytics = () => {
           Authorization: `Bearer ${accessToken}`,
         },
       })
-      .then(({ data }) => {console.log(data); setMetrics(data)});
+      .then(({ data }) => setMetrics(data));
   }, [getAccessTokenSilently]);
 
   useEffect(() => {

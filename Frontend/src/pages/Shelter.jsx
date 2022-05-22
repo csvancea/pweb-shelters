@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect, useCallback } from "react";
+import ReactTooltip from "react-tooltip";
 import Button from "../components/Button";
 import PageLayout from "../utils/PageLayout";
 import { MdEdit, MdDelete } from "react-icons/md";
@@ -59,8 +60,8 @@ const Shelter = () => {
         key: "Tags",
         value:
           <div className="keyword-list">
-            { shelterInfo.accessibility && <BiHandicap /> }
-            { shelterInfo.pets && <FaCat /> }
+            { shelterInfo.accessibility && <div data-tip data-for="accessibilityTip"><BiHandicap /></div> }
+            { shelterInfo.pets && <div data-tip data-for="petsTip"><FaCat /></div> }
           </div>
       }
     ],
@@ -123,8 +124,20 @@ const Shelter = () => {
     getMetricsInfo();
   }, [getShelter, getMetricsInfo]);
 
+  useEffect(() => {
+    ReactTooltip.rebuild();
+  }, [shelterFields]);
+
   return (
     <PageLayout>
+      <ReactTooltip id="accessibilityTip" place="top" effect="solid">
+        Accessibility
+      </ReactTooltip>
+
+      <ReactTooltip id="petsTip" place="top" effect="solid">
+        Pets
+      </ReactTooltip>
+
       <ShelterModal
         modalIsOpen={openedModal}
         closeModal={() => {

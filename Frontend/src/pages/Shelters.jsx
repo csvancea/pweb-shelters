@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import ReactTooltip from "react-tooltip";
 import Button from "../components/Button";
 import Table from "../components/Table";
 import Input from "../components/Input";
@@ -47,8 +48,8 @@ const columns = [
     accessor: "pets",
     Cell: ({ cell: { row } }) => (
       <div className="keyword-list">
-        { row.original.accessibility && <BiHandicap /> }
-        { row.original.pets && <FaCat /> }
+        { row.original.accessibility && <div data-tip data-for="accessibilityTip"><BiHandicap /></div> }
+        { row.original.pets && <div data-tip data-for="petsTip"><FaCat /></div> }
       </div>
     )
   },
@@ -124,6 +125,7 @@ const Shelters = () => {
     if (!isAdmin) {
       getUser();
     }
+    ReactTooltip.rebuild();
   }, [getAllShelters, getUser, user]);
 
   useEffect(() => {
@@ -138,6 +140,14 @@ const Shelters = () => {
 
   return (
     <PageLayout>
+      <ReactTooltip id="accessibilityTip" place="top" effect="solid">
+        Accessibility
+      </ReactTooltip>
+
+      <ReactTooltip id="petsTip" place="top" effect="solid">
+        Pets
+      </ReactTooltip>
+
       <ShelterModal
         modalIsOpen={openedModal}
         closeModal={() => {
