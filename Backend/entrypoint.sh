@@ -11,5 +11,7 @@ done
 
 echo "SQL Server is up"
 dotnet run --project ShelterHelper.Api/
+sleep 5
+dotnet run --project ShelterHelper.EmailService/
 
 
