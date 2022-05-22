@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
+import ReactTooltip from "react-tooltip";
 import Button from "../components/Button";
 import Table from "../components/Table";
 import Input from "../components/Input";
 import PageLayout from "../utils/PageLayout";
 import { MdAdd, MdSearch } from "react-icons/md";
-import { FaHandsHelping, FaCat } from "react-icons/fa";
+import { FaCat } from "react-icons/fa";
+import { BiHandicap } from 'react-icons/bi';
 import { GiEarthAfricaEurope } from "react-icons/gi";
 import ShelterModal from "../components/modals/ShelterModal";
 import RentModal from "../components/modals/RentModal";
@@ -14,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import { routes } from "../configs/Api";
 import axiosInstance from "../configs/Axios";
+import { authSettings } from "../configs/AuthSettings";
 import { prettyDate } from "../utils/Functions";
 
 const columns = [
@@ -45,8 +48,8 @@ const columns = [
     accessor: "pets",
     Cell: ({ cell: { row } }) => (
       <div className="keyword-list">
-        { row.original.accessibility && <FaHandsHelping /> }
-        { row.original.pets && <FaCat /> }
+        { row.original.accessibility && <div data-tip data-for="accessibilityTip"><BiHandicap /></div> }
+        { row.original.pets && <div data-tip data-for="petsTip"><FaCat /></div> }
       </div>
     )
   },
@@ -59,12 +62,24 @@ const columns = [
 
 const Shelters = () => {
   const navigate = useNavigate();
+  const [userData, setUserData] = useState({});
   const [shelters, setShelters] = useState([]);
   const [filteredShelters, setFilteredShelters] = useState([]);
   const [openedModal, setOpenedModal] = useState(false);
   const [openedRentModal, setOpenedRentModal] = useState(null);
   const [searchFilter, setSearchFilter] = useState("");
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, user } = useAuth0();
+
+  const getUser = useCallback(async () => {
+    const accessToken = await getAccessTokenSilently();
+    axiosInstance
+      .get(routes.profiles.getProfile(0), {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then(({ data }) => setUserData(data));
+  }, [getAccessTokenSilently]);
 
   const getAllShelters = useCallback(async () => {
     const accessToken = await getAccessTokenSilently();
@@ -104,8 +119,14 @@ const Shelters = () => {
   };
 
   useEffect(() => {
+    const isAdmin = user && (user[authSettings.rolesKey].length !== 0);
+
     getAllShelters();
-  }, [getAllShelters]);
+    if (!isAdmin) {
+      getUser();
+    }
+    ReactTooltip.rebuild();
+  }, [getAllShelters, getUser, user]);
 
   useEffect(() => {
     if (searchFilter) {
@@ -119,6 +140,14 @@ const Shelters = () => {
 
   return (
     <PageLayout>
+      <ReactTooltip id="accessibilityTip" place="top" effect="solid">
+        Accessibility
+      </ReactTooltip>
+
+      <ReactTooltip id="petsTip" place="top" effect="solid">
+        Pets
+      </ReactTooltip>
+
       <ShelterModal
         modalIsOpen={openedModal}
         closeModal={() => {
@@ -140,12 +169,14 @@ const Shelters = () => {
           {filteredShelters.length} {filteredShelters.length > 1 ? "Shelters" : "Shelter"}
         </h2>
         <Input
+          className="search-filter"
           style={{width: "30rem"}}
           placeholder="Filter"
           onChange={(e) => setSearchFilter(e.target.value?.toLowerCase())}
         />
         <div className="row-center">
-          <Button>
+          <Button
+          className="search-button">
               <MdSearch /> Search
           </Button>
           <AdminOnly>
@@ -166,7 +197,7 @@ const Shelters = () => {
         <Table
           data={filteredShelters}
           columns={columns}
-          onCellClick={(e, row, i, cell) => cell.column.id !== "address" && setOpenedRentModal(row.original)}
+          onCellClick={(e, row, i, cell) => cell.column.id !== "address" && userData.currentShelter == null && row.original.numberOfUsers < row.original.capacity && setOpenedRentModal(row.original)}
         />
       </UserOnly>
     </PageLayout>

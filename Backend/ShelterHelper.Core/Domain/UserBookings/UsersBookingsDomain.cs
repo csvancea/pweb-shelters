@@ -28,7 +28,7 @@ namespace ShelterHelper.Core.Domain.UserBookings
 
             aggregate.Bookings.Add(new Bookings(shelterId, aggregate.Id, DateTime.Now, DateTime.Now.AddDays(rentalDays)));
 
-            return new UserBookedShelterEvent(shelterId);
+            return new UserBookedShelterEvent(shelterId, aggregate.Id, aggregate.Name, aggregate.Email, rentalDays);
         }
 
         public void CheckInExtendShelter(int shelterId, int rentalDays)

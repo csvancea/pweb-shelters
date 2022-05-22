@@ -56,7 +56,7 @@ const topShelterOptions = (labels) => ({
       enabled: true,
     },
     datalabels: {
-      formatter: (v, context) => labels[context.dataIndex],
+      formatter: (_, context) => labels[context.dataIndex],
       font: {
         weight: "bold",
       },
@@ -148,7 +148,7 @@ const Analytics = () => {
           Authorization: `Bearer ${accessToken}`,
         },
       })
-      .then(({ data }) => {console.log(data); setMetrics(data)});
+      .then(({ data }) => setMetrics(data));
   }, [getAccessTokenSilently]);
 
   useEffect(() => {
@@ -162,8 +162,8 @@ const Analytics = () => {
         {
           data: metrics.refugeeCounts.map(r => r.count).slice(-days),
           lineTension: 0.4,
-          borderColor: "#B6A0F2",
-          backgroundColor: "#B6A0F2",
+          borderColor: "#17A9FA",
+          backgroundColor: "#17A9FA",
           innerHeight: "200px",
           borderRadius: 8
         },
@@ -179,8 +179,8 @@ const Analytics = () => {
         {
           data: groupAges(metrics.ageDistribution).map(r => r.count),
           lineTension: 0.4,
-          borderColor: "#B6A0F2",
-          backgroundColor: ["#8257ED","#B6A0F2", "#A485F2", "#D9CCF9"],
+          borderColor: "#FFFFFF",
+          backgroundColor: ["#2D6CA3", "#17a9fa","#00cadd", "#00d1be"],
           innerHeight: "250px",
           borderRadius: 8
         },
@@ -196,8 +196,8 @@ const Analytics = () => {
         {
           data: metrics.topShelters.map(r => r.count).slice(0, top),
           lineTension: 0.4,
-          borderColor: "#B6A0F2",
-          backgroundColor: "#B6A0F2",
+          borderColor: "#17A9FA",
+          backgroundColor: "#17A9FA",
           innerHeight: "250px",
           borderRadius: 8,
           datalabels: {
@@ -219,7 +219,9 @@ const Analytics = () => {
       <div className="flex flex-col gap-10">
         <div>
           <p className="mb-4 section-title">Evolution of sheltered refugees over time</p>
+          <label>Last</label>
           <Input
+            className="input-analytics"
             min="2"
             max="31"
             type="number"
@@ -227,8 +229,8 @@ const Analytics = () => {
             onChange={(e) =>
               setDays(e.target.value && parseInt(e.target.value))
             }
-            label="Last X Days"
           />
+          <label>days</label>
           <div className="graph">
             <Line
               options={evolutionOptions}
@@ -239,7 +241,9 @@ const Analytics = () => {
         </div>
         <div>
           <p className="mb-4 section-title">Most occupied shelters</p>
+          <label>Top</label>
           <Input
+            className="input-analytics"
             min="1"
             max={metrics.topShelters.filter((e) => e.count > 0).length}
             type="number"
@@ -247,8 +251,8 @@ const Analytics = () => {
             onChange={(e) =>
               setTop(e.target.value && parseInt(e.target.value))
             }
-            label="Top X Shelters"
           />
+          <label>Shelters</label>
           <div className="graph">
             <Bar
               data={topShelters}

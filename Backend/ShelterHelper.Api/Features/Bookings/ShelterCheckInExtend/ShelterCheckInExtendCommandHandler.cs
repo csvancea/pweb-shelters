@@ -2,7 +2,6 @@
 using ShelterHelper.Api.Web;
 using ShelterHelper.Core.Domain.Shelter;
 using ShelterHelper.Core.Domain.UserBookings;
-using MediatR;
 using System.Net;
 
 namespace ShelterHelper.Api.Features.Bookings.ShelterCheckInExtend

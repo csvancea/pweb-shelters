@@ -45,11 +45,11 @@ const columns = [
 ];
 
 const User = ({ self }) => {
-  const { getAccessTokenSilently } = useAuth0();
-  const { pathname, hash } = useLocation();
+  const { user, getAccessTokenSilently } = useAuth0();
+  const { pathname } = useLocation();
   const [userData, setUserData] = useState({});
   const [bookingHistory, setBookingHistory] = useState([]);
-  const [openedModal, setOpenedModal] = useState(hash === "#setup");
+  const [openedModal, setOpenedModal] = useState(false);
   const [openedExtensionModal, setOpenedExtensionModal] = useState(false);
   const navigate = useNavigate();
   const id = self === undefined ? pathname.split("/").reverse()[0] : 0;
@@ -65,6 +65,25 @@ const User = ({ self }) => {
     [userData]
   );
 
+  const registerUser = useCallback(async () => {
+    const accessToken = await getAccessTokenSilently();
+    axiosInstance
+      .post(routes.profiles.setupProfile, {Email: user.email, Name: user.name}, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then(() => {
+        setUserData({
+          profile: {
+            name: user.name,
+            email: user.email
+          }
+        });
+        setOpenedModal(true);
+      });
+  }, [user, getAccessTokenSilently]);
+
   const getUser = useCallback(async () => {
     const accessToken = await getAccessTokenSilently();
     axiosInstance
@@ -73,8 +92,15 @@ const User = ({ self }) => {
           Authorization: `Bearer ${accessToken}`,
         },
       })
-      .then(({ data }) => setUserData(data));
-  }, [getAccessTokenSilently, id]);
+      .then(({ data }) => setUserData(data))
+      .catch((e) => {
+        /* user profile not found. let's set it up! */
+        if (e.response?.status !== 401) {
+          throw e;
+        }
+        registerUser();
+      });
+  }, [getAccessTokenSilently, registerUser, id]);
 
   const getBookingHistory = useCallback(async () => {
     const accessToken = await getAccessTokenSilently();
@@ -102,15 +128,17 @@ const User = ({ self }) => {
 
   const handleDelete = () => {
     (async () => {
-      alert("Are you sure you want to delete this user?");
-      const accessToken = await getAccessTokenSilently();
-      axiosInstance
-      .delete(routes.profiles.deleteProfile(id), {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .then(() => navigate("/users"));
+      const action = window.confirm("Are you sure you want to delete this user?");
+      if (action) {
+        const accessToken = await getAccessTokenSilently();
+        axiosInstance
+          .delete(routes.profiles.deleteProfile(id), {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          })
+          .then(() => navigate("/users"));
+        }
     })();
   };
 
@@ -129,15 +157,17 @@ const User = ({ self }) => {
 
   const handleCheckOut = () => {
     (async () => {
-      alert("Are you sure you want to checkout?");
-      const accessToken = await getAccessTokenSilently();
-      axiosInstance
-        .put(routes.bookings.checkOut(id), {ShelterId: userData.currentShelter?.shelterId}, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        })
-        .then(() => { getUser(); getBookingHistory(); });
+      let action = window.confirm("Are you sure you want to checkout?");
+      if (action) {
+        const accessToken = await getAccessTokenSilently();
+        axiosInstance
+          .put(routes.bookings.checkOut(id), {ShelterId: userData.currentShelter?.shelterId}, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          })
+          .then(() => { getUser(); getBookingHistory(); });
+        }
     })();
   };
 
@@ -168,17 +198,21 @@ const User = ({ self }) => {
       <div className="row-between">
         <h2>{userData.profile?.name}</h2>
         <div className="row-center">
-          <Button onClick={() => setOpenedModal(true)}>
+          <Button 
+          className="edit-button"
+          onClick={() => setOpenedModal(true)}>
             <MdEdit /> Edit
           </Button>
-          <AdminOnly>
-            <Button
-              className="delete-button"
-              onClick={() => handleDelete()}
-            >
-              <MdDelete /> Delete
-            </Button>
-          </AdminOnly>
+          {userData.currentShelter == null && id !== 0 &&
+            <AdminOnly>
+              <Button
+                className="delete-button"
+                onClick={() => handleDelete()}
+              >
+                <MdDelete /> Delete
+              </Button>
+            </AdminOnly>
+          }
         </div>
       </div>
       <div className="flex flex-col gap-10">
@@ -186,7 +220,7 @@ const User = ({ self }) => {
           <Section title={"Profile Details"} fields={userFields} />
           {userData.currentShelter != null &&
           <div className="flex flex-col gap-5">
-            <p className="section-title">Current accomodation</p>
+            <p className="section-title">Current Accommodation</p>
             <div className="flex gap-5">
               <div className="statistic-card">
                 <div className="card-statistic">
@@ -206,10 +240,10 @@ const User = ({ self }) => {
               style={{width: "auto"}}
               onClick={() => setOpenedExtensionModal(true)}
             >
-              <BsPlusLg /> Extend accomodation
+              <BsPlusLg /> Extend accommodation
             </Button>
             <Button
-              className="delete-button"
+              className="checkout-button"
               style={{width: "auto"}}
               onClick={() => handleCheckOut()}
             >
@@ -218,7 +252,7 @@ const User = ({ self }) => {
           </div> }
         </div>
         <div className="flex flex-col gap-5 w-full p-[1px]">
-          <p className="section-title">Accomodation history</p>
+          <p className="section-title">Accommodation History</p>
           <AdminOnly>
             <Table
               data={bookingHistory}

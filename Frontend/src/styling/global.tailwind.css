@@ -85,9 +85,12 @@ thead>tr {
 /* button */
 
 .button {
-    @apply flex w-fit items-center justify-center gap-2 px-4 py-2 text-lg font-semibold text-white rounded-full bg-purple-secondary;
+    @apply flex w-fit items-center justify-center gap-2 px-4 py-2 text-lg font-semibold text-white rounded-full bg-blue-primary;
 }
 
+.button>search {
+    @apply bg-yellow
+}
 .button:disabled {
     @apply bg-gray;
 }
@@ -115,6 +118,10 @@ label {
     @apply w-full px-4 py-3 border-2 rounded-lg outline-none border-gray text-base font-semibold;
 }
 
+.input-analytics {
+    @apply w-fit px-0 py-0 mx-2 text-center outline-4
+}
+
 .input:focus {
     @apply border-purple-secondary;
 }
@@ -127,11 +134,11 @@ label {
 }
 
 .keyword-list-active {
-    @apply p-4 rounded-3xl bg-purple text-white font-semibold text-sm;
+    @apply p-4 rounded-3xl bg-blue-secondary text-white font-semibold text-sm;
 }
 
 .keyword-list-inactive {
-    @apply p-4 rounded-3xl bg-red text-white font-semibold text-sm;
+    @apply p-4 rounded-3xl bg-gray text-white font-semibold text-sm;
 }
 /*
 .keyword-list>span {
@@ -159,7 +166,7 @@ label {
 }
 
 .modal>form>button {
-    @apply mt-5 w-full bg-purple-secondary;
+    @apply mt-5 w-full bg-blue-primary;
 }
 
 .row-center {
@@ -170,6 +177,21 @@ label {
     @apply bg-red;
 }
 
+.checkout-button {
+    @apply bg-black;
+}
+
+.search-button {
+    @apply bg-yellow;
+}
+
+.edit-button {
+    @apply bg-yellow;
+}
+
+.search-filter {
+    @apply border-yellow
+}
 
 /* special info section */
 
@@ -201,6 +223,6 @@ label {
 }
 
 .statistic-card {
-    @apply flex flex-col gap-3 p-10 border-t-[5px] border-purple-accent w-max rounded-md m-[1px];
+    @apply flex flex-col gap-3 p-10 border-t-[5px] border-yellow w-max rounded-md m-[1px];
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.05);
 }

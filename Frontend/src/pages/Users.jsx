@@ -81,12 +81,14 @@ const Users = () => {
       <div className="row-between">
         <h2>{filteredUsers.length} {filteredUsers.length > 1 ? "Users" : "User"}</h2>
         <Input
+          className="search-filter"
           style={{width: "30rem"}}
           placeholder="Filter"
           onChange={(e) => setSearchFilter(e.target.value?.toLowerCase())}
         />
         <div className="row-center">
-          <Button>
+          <Button
+          className="search-button">
               <MdSearch /> Search
           </Button>
         </div>

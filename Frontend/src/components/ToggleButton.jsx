@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 
 const ToggleButton = (props) => {
-
     const [toggle, setToggle] = useState(false);
-    const { defaultChecked, onChange, disabled, icon } = props;
+    const { defaultChecked, onChange, disabled, icon, ...rest } = props;
 
     useEffect(() => {
         if (defaultChecked) {
@@ -12,7 +11,6 @@ const ToggleButton = (props) => {
     }, [defaultChecked]);
 
     const triggerToggle = () => {
-        console.log("trigger");
         if ( disabled ) {
             return;
         }
@@ -25,8 +23,8 @@ const ToggleButton = (props) => {
     }
     return (
             toggle ?
-                <span onClick={triggerToggle} className="keyword-list-active">{ icon }</span> : 
-                <span onClick={triggerToggle} className="keyword-list-inactive">{ icon }</span>
+                <span onClick={triggerToggle} className="keyword-list-active" {...rest}>{ icon }</span> : 
+                <span onClick={triggerToggle} className="keyword-list-inactive" {...rest}>{ icon }</span>
             );
 }
 

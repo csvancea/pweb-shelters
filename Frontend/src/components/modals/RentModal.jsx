@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 const RentModal = ({ modalIsOpen, closeModal, submitForm, extend }) => {
   const { register, handleSubmit, getValues } = useForm();
   const action = extend ? "Extend" : "Check in";
-  const placeholder = extend ? "of accomodation" : "";
+  const placeholder = extend ? "of accommodation" : "";
 
   const handleClick = async () => {
     const data = getValues();

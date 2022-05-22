@@ -32,7 +32,7 @@ const PageMenu = () => {
   return (
     <div className="admin-menu relative">
       <div className="logo-container">
-        <img src={logo} alt="logo" style={{"margin-top": "75px", "max-width": "30%"}} />
+        <img src={logo} alt="logo" style={{marginTop: "75px", maxWidth: "30%"}} />
       </div>
       <nav className="admin-nav">
         <div>

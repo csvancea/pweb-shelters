@@ -29,7 +29,7 @@ const shortDate = (date) => {
     const month = formattedDate.getMonth();
     const day = formattedDate.getDate();
 
-    return pad(day) + "/" + pad(month);
+    return pad(day) + "/" + pad(month + 1);
 };
 
 const daysBetween = (startDate, endDate) => {
