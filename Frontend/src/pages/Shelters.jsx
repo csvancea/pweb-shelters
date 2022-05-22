@@ -141,11 +141,11 @@ const Shelters = () => {
   return (
     <PageLayout>
       <ReactTooltip id="accessibilityTip" place="top" effect="solid">
-        Accessibility
+        Disability Assistance
       </ReactTooltip>
 
       <ReactTooltip id="petsTip" place="top" effect="solid">
-        Pets
+        Pet-Friendly
       </ReactTooltip>
 
       <ShelterModal
