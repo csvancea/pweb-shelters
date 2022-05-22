@@ -4,7 +4,7 @@
 
 ### Wireframes and Prototypes
 
-[Figma link](https://www.figma.com/file/qQcphiNVE02Ln8sRaXpwRV/PWeb-Final?node-id=2%3A3)
+[Figma link](https://www.figma.com/file/nbUJIyIY1fuqZA3hxL93ik/PWeb----FINAL?node-id=2%3A5)
 
 ### User Stories
 
