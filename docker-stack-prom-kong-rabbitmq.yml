@@ -1,7 +1,7 @@
 version: "3.8"
 services:
     frontend:
-        image: joanna14/frontend:v3
+        image: joanna14/frontend:v4
         networks:
             - external
         depends_on:
@@ -10,7 +10,7 @@ services:
             - "3000:3000"
 
     backend:
-        image: joanna14/backend:v3
+        image: joanna14/backend:v4
         ports:
             - "5002:5002"
         depends_on:
@@ -97,13 +97,6 @@ services:
       networks:
         - rabbit-network
       hostname: rabbitmq
-
-    emailservice:
-      build: ./worker
-      depends_on:
-        - rabbitmq
-      networks:
-        - rabbit-network
 
 networks:
     back-db:
