@@ -1,0 +1,56 @@
+version: "3.9"
+services:
+    frontend:
+        build: ./Frontend
+        depends_on:
+            - backend
+        ports:
+            - "3000:3000"
+
+    backend:
+        build: ./Backend
+        ports:
+            - "5002:5002"
+        depends_on:
+            - db
+        networks:
+            - back-db
+            - rabbit-network
+
+    db:
+        image: postgres:12
+        environment:
+            POSTGRES_DB: ShelterHelperDb
+            POSTGRES_USER: admin
+            POSTGRES_PASSWORD: admin
+        volumes:
+            - db-volume:/var/lib/postgresql/data
+        networks:
+            - back-db
+            - admin-db
+
+    adminer:
+        image: adminer
+        ports:
+            - 8080:8080
+        networks:
+            - admin-db
+        depends_on:
+            - db
+
+    rabbitmq:
+      image: rabbitmq:management-alpine
+      ports:
+        - 5672:5672
+        - 15672:15672
+      networks:
+        - rabbit-network
+      hostname: rabbitmq
+
+networks:
+    back-db:
+    admin-db:
+    rabbit-network:
+
+volumes:
+    db-volume:

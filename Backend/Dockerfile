@@ -11,7 +11,7 @@ RUN ["dotnet", "restore"]
 
 RUN ["dotnet", "build"]
 
-EXPOSE 5002
+EXPOSE 5002 7002
 
 RUN chmod +x ./entrypoint.sh
 
